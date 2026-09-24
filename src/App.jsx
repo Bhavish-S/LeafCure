@@ -12,7 +12,7 @@ import { runPathologyInference } from './services/inferenceEngine';
 import { APP_TRANSLATIONS, CROP_DISEASE_DATASET, CLINICAL_CHEMICAL_TREATMENTS } from './data/pathologyData';
 import { Target, UploadCloud, History } from 'lucide-react';
 
-const LOCAL_STORAGE_KEY = 'agricure_ai_diagnoses_v2';
+const LOCAL_STORAGE_KEY = 'floraguard_ai_diagnoses_v2';
 
 function App() {
   const [lang, setLang] = useState('en'); // 'en' | 'hi'
@@ -30,7 +30,7 @@ function App() {
       chemicalTreatments: CLINICAL_CHEMICAL_TREATMENTS,
       chemicalInterventions: CLINICAL_CHEMICAL_TREATMENTS,
       scannedAt: new Date().toISOString(),
-      scanId: 'AGRI-INIT-001'
+      scanId: 'FLORA-INIT-001'
     };
   });
   const [history, setHistory] = useState([]);
@@ -183,7 +183,7 @@ function App() {
 
   // Primary immediate render - no conditional returns on outer App wrapper
   return (
-    <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100 font-sans selection:bg-emerald-500 selection:text-slate-950">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-950 via-indigo-950 to-violet-950 text-slate-100 font-sans selection:bg-violet-500 selection:text-slate-950">
       
       {/* Top Navigation Bar */}
       <Navbar
@@ -207,11 +207,11 @@ function App() {
               }}
               className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'diagnosis'
-                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30 ring-1 ring-emerald-400/40'
+                  ? 'bg-violet-600 text-white shadow-md shadow-violet-600/30 ring-1 ring-violet-400/40'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
               }`}
             >
-              <Target className="w-3.5 h-3.5 text-emerald-300" />
+              <Target className="w-3.5 h-3.5 text-violet-300" />
               <span>Main Diagnosis Portal</span>
             </button>
 
@@ -222,11 +222,11 @@ function App() {
               }}
               className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'upload'
-                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30 ring-1 ring-emerald-400/40'
+                  ? 'bg-violet-600 text-white shadow-md shadow-violet-600/30 ring-1 ring-violet-400/40'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
               }`}
             >
-              <UploadCloud className="w-3.5 h-3.5 text-emerald-300" />
+              <UploadCloud className="w-3.5 h-3.5 text-violet-300" />
               <span>New Scan & Samples</span>
             </button>
 
@@ -237,20 +237,20 @@ function App() {
               }}
               className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'history'
-                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30 ring-1 ring-emerald-400/40'
+                  ? 'bg-violet-600 text-white shadow-md shadow-violet-600/30 ring-1 ring-violet-400/40'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
               }`}
             >
-              <History className="w-3.5 h-3.5 text-emerald-300" />
+              <History className="w-3.5 h-3.5 text-violet-300" />
               <span>Scan Vault ({history.length})</span>
             </button>
           </div>
 
           {activeDiagnosis && (
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-slate-300 font-mono">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="w-2 h-2 rounded-full bg-violet-400 animate-pulse"></span>
               <span className="text-slate-400">Active Specimen:</span>
-              <strong className="text-emerald-400 font-semibold">{activeDiagnosis.cropName[lang] || activeDiagnosis.cropName.en}</strong>
+              <strong className="text-violet-400 font-semibold">{activeDiagnosis.cropName[lang] || activeDiagnosis.cropName.en}</strong>
               <span className="text-slate-500">•</span>
               <span className="text-slate-300">{activeDiagnosis.diseaseName[lang] || activeDiagnosis.diseaseName.en}</span>
             </div>
@@ -322,10 +322,10 @@ function App() {
       />
 
       {/* Footer */}
-      <footer className="w-full border-t border-slate-800/80 bg-slate-950 py-8 text-center text-xs text-slate-500 no-print">
+      <footer className="w-full border-t border-slate-800/80 bg-slate-950/50 backdrop-blur-md py-8 text-center text-xs text-slate-400 no-print">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-slate-400">
-            © {new Date().getFullYear()} AgriCure AI – Precision Agronomy & Plant Pathology. All rights reserved.
+            © {new Date().getFullYear()} FloraGuard AI – Precision Agronomy & Plant Pathology. All rights reserved.
           </p>
           <div className="flex items-center gap-4 text-slate-400">
             <span>Client-Side Neural Inference Engine</span>

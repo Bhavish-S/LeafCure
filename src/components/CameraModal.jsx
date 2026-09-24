@@ -78,7 +78,7 @@ export default function CameraModal({ isOpen, onClose, onCapture, lang }) {
         
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800 bg-slate-950/60">
-          <div className="flex items-center gap-2 text-emerald-400 font-semibold text-base">
+          <div className="flex items-center gap-2 text-violet-400 font-semibold text-base">
             <Camera className="w-5 h-5" />
             <span>{t.cameraModalTitle}</span>
           </div>
@@ -118,22 +118,22 @@ export default function CameraModal({ isOpen, onClose, onCapture, lang }) {
               />
 
               {/* Viewfinder Targeting Overlays */}
-              <div className="absolute inset-8 pointer-events-none border border-emerald-500/40 rounded-xl">
+              <div className="absolute inset-8 pointer-events-none border border-violet-500/40 rounded-xl">
                 {/* Corner reticles */}
-                <div className="absolute -top-1 -left-1 w-6 h-6 border-t-2 border-l-2 border-emerald-400"></div>
-                <div className="absolute -top-1 -right-1 w-6 h-6 border-t-2 border-r-2 border-emerald-400"></div>
-                <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-2 border-l-2 border-emerald-400"></div>
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-2 border-r-2 border-emerald-400"></div>
+                <div className="absolute -top-1 -left-1 w-6 h-6 border-t-2 border-l-2 border-violet-400"></div>
+                <div className="absolute -top-1 -right-1 w-6 h-6 border-t-2 border-r-2 border-violet-400"></div>
+                <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-2 border-l-2 border-violet-400"></div>
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-2 border-r-2 border-violet-400"></div>
                 
                 {/* Center target mark */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-30">
-                  <div className="w-12 h-12 border border-emerald-400 rounded-full"></div>
+                  <div className="w-12 h-12 border border-violet-400 rounded-full"></div>
                 </div>
               </div>
 
               {isInitializing && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/60 text-slate-300 text-sm">
-                  <RefreshCw className="w-5 h-5 animate-spin mr-2 text-emerald-400" />
+                  <RefreshCw className="w-5 h-5 animate-spin mr-2 text-violet-400" />
                   Connecting camera sensor...
                 </div>
               )}
@@ -157,7 +157,7 @@ export default function CameraModal({ isOpen, onClose, onCapture, lang }) {
               <button
                 onClick={captureFrame}
                 disabled={isInitializing}
-                className="flex items-center gap-2 px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white text-xs font-bold shadow-md shadow-emerald-600/30 transition-all active:scale-95"
+                className="flex items-center gap-2 px-5 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white text-xs font-bold shadow-md shadow-violet-600/30 transition-all active:scale-95"
               >
                 <Camera className="w-4 h-4" />
                 <span>{t.captureSnapshot}</span>

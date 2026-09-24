@@ -77,7 +77,7 @@ export async function runPathologyInference(imageSource, predefinedId = null, on
       ...matchedSample,
       imageUrl: imageSource,
       scannedAt: new Date().toISOString(),
-      scanId: `AGRI-${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
+      scanId: `FLORA-${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
       chemicalTreatments: matchedSample.chemicalTreatments || matchedSample.chemicalInterventions || (matchedSample.severity === 'none' ? HEALTHY_MAINTENANCE_TREATMENTS : CLINICAL_CHEMICAL_TREATMENTS),
       chemicalInterventions: matchedSample.chemicalInterventions || matchedSample.chemicalTreatments || (matchedSample.severity === 'none' ? HEALTHY_MAINTENANCE_TREATMENTS : CLINICAL_CHEMICAL_TREATMENTS),
       actualAnalysis: analysis,
@@ -113,7 +113,7 @@ export async function runPathologyInference(imageSource, predefinedId = null, on
       },
       symptoms: {
         en: [
-          'Vibrant, clean emerald foliage with intact laminar venation and robust turgor.',
+          'Vibrant, clean violet foliage with intact laminar venation and robust turgor.',
           'Zero active necrotic lesions, chlorotic haloing, or fungal pustules detected.',
           'Cuticle layer intact with healthy photosynthetic chlorophyll distribution.'
         ],
@@ -125,7 +125,7 @@ export async function runPathologyInference(imageSource, predefinedId = null, on
       },
       imageUrl: imageSource,
       scannedAt: new Date().toISOString(),
-      scanId: `AGRI-${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
+      scanId: `FLORA-${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
       lesions: [],
       chemicalTreatments: HEALTHY_MAINTENANCE_TREATMENTS,
       chemicalInterventions: HEALTHY_MAINTENANCE_TREATMENTS,
@@ -252,7 +252,7 @@ export async function runPathologyInference(imageSource, predefinedId = null, on
       },
       imageUrl: imageSource,
       scannedAt: new Date().toISOString(),
-      scanId: `AGRI-${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
+      scanId: `FLORA-${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
       lesions: lesionsList,
       chemicalTreatments: CLINICAL_CHEMICAL_TREATMENTS,
       chemicalInterventions: CLINICAL_CHEMICAL_TREATMENTS,

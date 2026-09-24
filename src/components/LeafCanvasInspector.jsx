@@ -287,7 +287,7 @@ export default function LeafCanvasInspector({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-800">
         <div>
           <h3 className="font-bold text-white text-base sm:text-lg flex items-center gap-2">
-            <Target className="w-5 h-5 text-emerald-400" />
+            <Target className="w-5 h-5 text-violet-400" />
             <span>{t.visualInspectorTitle}</span>
           </h3>
           <p className="text-xs text-slate-400">
@@ -298,7 +298,7 @@ export default function LeafCanvasInspector({
         {/* Active Lesions Identified Counter */}
         <div className="flex items-center gap-2">
           <span className="text-xs font-mono px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-200">
-            {t.activeLesionsCount}: <strong className={activeLesions.length === 0 ? "text-emerald-400 font-bold" : "text-amber-400 font-bold"}>
+            {t.activeLesionsCount}: <strong className={activeLesions.length === 0 ? "text-violet-400 font-bold" : "text-amber-400 font-bold"}>
               {activeLesions.length === 0 ? (lang === 'hi' ? '0 (स्वस्थ)' : '0 (Healthy)') : activeLesions.length}
             </strong>
           </span>
@@ -313,8 +313,8 @@ export default function LeafCanvasInspector({
         />
 
         {(severity === 'none' || activeLesions.length === 0) && (
-          <div className="absolute top-4 right-4 bg-emerald-950/95 border border-emerald-500/60 text-emerald-300 text-xs px-3.5 py-2 rounded-xl flex items-center gap-2 shadow-2xl backdrop-blur-md animate-fadeIn">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <div className="absolute top-4 right-4 bg-violet-950/95 border border-violet-500/60 text-violet-300 text-xs px-3.5 py-2 rounded-xl flex items-center gap-2 shadow-2xl backdrop-blur-md animate-fadeIn">
+            <CheckCircle2 className="w-4 h-4 text-violet-400 shrink-0" />
             <span className="font-semibold tracking-wide">
               {t.foliageHealthyStatus || 'Status: Foliage Healthy (No Active Pathogens Detected)'}
             </span>
@@ -331,7 +331,7 @@ export default function LeafCanvasInspector({
             onClick={() => setShowBoxes(!showBoxes)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border font-medium transition-all ${
               showBoxes
-                ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/50 shadow-sm'
+                ? 'bg-violet-950/80 text-violet-300 border-violet-500/50 shadow-sm'
                 : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-slate-200'
             }`}
           >

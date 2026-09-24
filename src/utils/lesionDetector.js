@@ -1,5 +1,5 @@
 /**
- * AgriCure AI – Focused Lesion-First Leaf Pathology & Retinal Inspection Engine
+ * FloraGuard AI – Focused Lesion-First Leaf Pathology & Retinal Inspection Engine
  * 
  * Implements focused lesion-first detection logic:
  * 1. Focus-Region Segmentation: Scans central leaf lamina, discarding background foliage dilution.

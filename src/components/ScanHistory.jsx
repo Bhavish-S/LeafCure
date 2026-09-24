@@ -25,7 +25,7 @@ export default function ScanHistory({
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(history, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `agricure_scans_${new Date().toISOString().slice(0,10)}.json`);
+    downloadAnchor.setAttribute("download", `floraguard_scans_${new Date().toISOString().slice(0,10)}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -38,7 +38,7 @@ export default function ScanHistory({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h3 className="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2">
-            <History className="w-6 h-6 text-emerald-400" />
+            <History className="w-6 h-6 text-violet-400" />
             <span>{t.historyTitle}</span>
           </h3>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
@@ -90,7 +90,7 @@ export default function ScanHistory({
             return (
               <div
                 key={item.scanId || item.scannedAt}
-                className="group relative rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-emerald-500/60 transition-all duration-200 overflow-hidden shadow-lg flex flex-col justify-between"
+                className="group relative rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-violet-500/60 transition-all duration-200 overflow-hidden shadow-lg flex flex-col justify-between"
               >
                 {/* Image Preview Thumbnail */}
                 <div className="relative aspect-video bg-slate-950 overflow-hidden border-b border-slate-800/80">
@@ -106,7 +106,7 @@ export default function ScanHistory({
                         ? 'bg-red-950/90 text-red-400 border-red-700/80'
                         : isModerate
                         ? 'bg-amber-950/90 text-amber-400 border-amber-700/80'
-                        : 'bg-emerald-950/90 text-emerald-400 border-emerald-700/80'
+                        : 'bg-violet-950/90 text-violet-400 border-violet-700/80'
                     }`}
                   >
                     {t[item.severity] || item.severity}
@@ -120,7 +120,7 @@ export default function ScanHistory({
                 {/* Details */}
                 <div className="p-4 flex-1 flex flex-col justify-between">
                   <div>
-                    <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">
+                    <span className="text-[10px] font-bold text-violet-400 uppercase tracking-wider block">
                       {item.cropName[lang] || item.cropName.en}
                     </span>
                     <h4 className="font-bold text-white text-sm mt-0.5 line-clamp-1">
@@ -136,7 +136,7 @@ export default function ScanHistory({
                   <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
                     <button
                       onClick={() => onSelectScan(item)}
-                      className="flex items-center gap-1 text-xs font-semibold text-emerald-400 hover:text-emerald-300"
+                      className="flex items-center gap-1 text-xs font-semibold text-violet-400 hover:text-violet-300"
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
                       <span>{t.viewScan}</span>

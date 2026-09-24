@@ -10,17 +10,17 @@ export default function DiagnosticReportPrint({ result, lang }) {
     <div className="print-only p-8 bg-white text-slate-900 font-sans max-w-4xl mx-auto">
       
       {/* Official Certificate Header */}
-      <div className="border-b-2 border-emerald-700 pb-4 mb-6 flex justify-between items-start">
+      <div className="border-b-2 border-violet-700 pb-4 mb-6 flex justify-between items-start">
         <div>
-          <h1 className="text-2xl font-black text-emerald-900 uppercase tracking-tight">
-            AgriCure AI – Crop Pathology Diagnostic Certificate
+          <h1 className="text-2xl font-black text-violet-900 uppercase tracking-tight">
+            FloraGuard AI – Crop Pathology Diagnostic Certificate
           </h1>
           <p className="text-xs text-slate-600 font-medium mt-1">
             Automated Agricultural Vision & Field Pathology Advisory Protocol
           </p>
         </div>
         <div className="text-right text-xs font-mono">
-          <p className="font-bold text-slate-900">CERT ID: {result.scanId || 'AGRI-SCAN-001'}</p>
+          <p className="font-bold text-slate-900">CERT ID: {result.scanId || 'FLORA-SCAN-001'}</p>
           <p className="text-slate-600">{new Date(result.scannedAt).toLocaleString()}</p>
         </div>
       </div>
@@ -35,7 +35,7 @@ export default function DiagnosticReportPrint({ result, lang }) {
         </div>
         <div>
           <span className="text-[10px] uppercase font-bold text-slate-500 block">Pathological Diagnosis</span>
-          <p className="text-base font-extrabold text-emerald-800">
+          <p className="text-base font-extrabold text-violet-800">
             {result.diseaseName.en} ({result.scientificName})
           </p>
         </div>
@@ -47,7 +47,7 @@ export default function DiagnosticReportPrint({ result, lang }) {
         </div>
         <div>
           <span className="text-[10px] uppercase font-bold text-slate-500 block">Neural Inference Confidence</span>
-          <p className="text-sm font-mono font-bold text-emerald-700">
+          <p className="text-sm font-mono font-bold text-violet-700">
             {result.confidence}% Match
           </p>
         </div>
@@ -73,7 +73,7 @@ export default function DiagnosticReportPrint({ result, lang }) {
 
       {/* Organic & Biological Treatment Plan Table */}
       <div className="mb-6">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-800 border-b border-emerald-200 pb-1 mb-2">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-violet-800 border-b border-violet-200 pb-1 mb-2">
           Tier 1: Recommended Organic & Biological Interventions
         </h3>
         <table className="w-full text-xs text-left border-collapse border border-slate-300">
@@ -99,7 +99,7 @@ export default function DiagnosticReportPrint({ result, lang }) {
       {/* Chemical Interventions Table */}
       <div className="mb-6">
         <h3 className={`text-xs font-bold uppercase tracking-wider border-b pb-1 mb-2 ${
-          result.severity === 'none' ? 'text-emerald-800 border-emerald-200' : 'text-amber-800 border-amber-200'
+          result.severity === 'none' ? 'text-violet-800 border-violet-200' : 'text-amber-800 border-amber-200'
         }`}>
           {result.severity === 'none'
             ? 'Tier 2: Recommended Foliar Micronutrient & Plant Maintenance Care'
@@ -145,7 +145,7 @@ export default function DiagnosticReportPrint({ result, lang }) {
       {/* Footer & Signature Line */}
       <div className="border-t-2 border-slate-300 pt-4 mt-8 flex justify-between items-end text-[10px] text-slate-500">
         <div>
-          <p>Verified through AgriCure AI Client Vision Pathology Engine v2.4.</p>
+          <p>Verified through FloraGuard AI Client Vision Pathology Engine v2.4.</p>
           <p className="mt-1">{t.disclaimer}</p>
         </div>
         <div className="text-center w-48 border-t border-slate-400 pt-1">

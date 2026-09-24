@@ -31,13 +31,13 @@ export default function DiagnosticDashboard({
     ? 'bg-red-950/80 text-red-400 border-red-700/80'
     : isModerate
     ? 'bg-amber-950/80 text-amber-400 border-amber-700/80'
-    : 'bg-emerald-950/80 text-emerald-400 border-emerald-700/80';
+    : 'bg-violet-950/80 text-violet-400 border-violet-700/80';
 
   const severityDotClass = isSevere
     ? 'bg-red-500'
     : isModerate
     ? 'bg-amber-500'
-    : 'bg-emerald-500';
+    : 'bg-violet-500';
 
   const confidenceScore = activeResult.confidence || 95.0;
 
@@ -45,10 +45,10 @@ export default function DiagnosticDashboard({
     <div className="w-full my-8 space-y-6 animate-fadeIn">
       
       {/* Top Main Diagnosis Card */}
-      <div className="relative rounded-3xl glass-panel-glow p-6 sm:p-8 border border-emerald-500/30 overflow-hidden shadow-2xl">
+      <div className="relative rounded-3xl glass-panel-glow p-6 sm:p-8 border border-violet-500/30 overflow-hidden shadow-2xl">
         
         {/* Background accent ambient light */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
           
@@ -67,8 +67,8 @@ export default function DiagnosticDashboard({
                 <span>{t.severityLabel}: {t[activeResult.severity] || activeResult.severity}</span>
               </span>
 
-              <span className="px-3 py-1 rounded-full text-xs font-mono bg-emerald-950/60 text-emerald-400 border border-emerald-500/30">
-                ID: {activeResult.scanId || 'AGRI-SCAN'}
+              <span className="px-3 py-1 rounded-full text-xs font-mono bg-violet-950/60 text-violet-400 border border-violet-500/30">
+                ID: {activeResult.scanId || 'FLORA-SCAN'}
               </span>
             </div>
 
@@ -77,7 +77,7 @@ export default function DiagnosticDashboard({
               <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight">
                 {activeResult.diseaseName[lang] || activeResult.diseaseName.en}
               </h2>
-              <p className="text-sm sm:text-base text-emerald-400/90 italic font-mono mt-1">
+              <p className="text-sm sm:text-base text-violet-400/90 italic font-mono mt-1">
                 {activeResult.scientificName}
               </p>
             </div>
@@ -85,7 +85,7 @@ export default function DiagnosticDashboard({
             {/* Pathogen and Prognosis Description */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               <div className="rounded-xl bg-slate-900/90 border border-slate-800 p-3.5 flex items-start gap-3">
-                <Dna className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                <Dna className="w-5 h-5 text-violet-400 shrink-0 mt-0.5" />
                 <div>
                   <span className="text-[11px] uppercase tracking-wider text-slate-400 block font-semibold">
                     {t.pathogenTypeLabel}
@@ -111,7 +111,7 @@ export default function DiagnosticDashboard({
 
             {/* Prognosis Alert Banner */}
             <div className="rounded-xl bg-slate-950/70 border border-slate-800/90 p-4 flex items-start gap-3">
-              <HeartPulse className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+              <HeartPulse className="w-5 h-5 text-violet-400 shrink-0 mt-0.5" />
               <div>
                 <span className="text-xs font-bold text-slate-200 block mb-0.5">
                   {t.prognosisLabel}
@@ -163,7 +163,7 @@ export default function DiagnosticDashboard({
             </div>
 
             <div className="text-center mt-3">
-              <span className="text-xs font-semibold text-emerald-400 flex items-center justify-center gap-1">
+              <span className="text-xs font-semibold text-violet-400 flex items-center justify-center gap-1">
                 <CheckCircle2 className="w-4 h-4" />
                 <span>Deep Pathology Heuristic Match</span>
               </span>

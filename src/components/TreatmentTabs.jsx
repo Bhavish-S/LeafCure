@@ -39,11 +39,11 @@ export default function TreatmentTabs({ result, lang = 'en', onPrintReport }) {
             onClick={() => setActiveTab('organic')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 ${
               activeTab === 'organic'
-                ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
+                ? 'bg-violet-600 text-white shadow-md shadow-violet-600/30'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
             }`}
           >
-            <Leaf className="w-4 h-4 text-emerald-300" />
+            <Leaf className="w-4 h-4 text-violet-300" />
             <span>{t.tabOrganic}</span>
           </button>
 
@@ -51,11 +51,11 @@ export default function TreatmentTabs({ result, lang = 'en', onPrintReport }) {
             onClick={() => setActiveTab('chemical')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 ${
               activeTab === 'chemical'
-                ? (isHealthyCrop ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30' : 'bg-amber-600 text-white shadow-md shadow-amber-600/30')
+                ? (isHealthyCrop ? 'bg-violet-600 text-white shadow-md shadow-violet-600/30' : 'bg-amber-600 text-white shadow-md shadow-amber-600/30')
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
             }`}
           >
-            <FlaskConical className={`w-4 h-4 ${isHealthyCrop ? 'text-emerald-300' : 'text-amber-300'}`} />
+            <FlaskConical className={`w-4 h-4 ${isHealthyCrop ? 'text-violet-300' : 'text-amber-300'}`} />
             <span>{isHealthyCrop ? (lang === 'hi' ? 'पोषक तत्व एवं रखरखाव' : 'Foliar Nutrition & Care') : t.tabChemical}</span>
           </button>
 
@@ -75,9 +75,9 @@ export default function TreatmentTabs({ result, lang = 'en', onPrintReport }) {
         {/* Action Button: Print / Save Web Diagnostic Report */}
         <button
           onClick={onPrintReport}
-          className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 hover:text-emerald-300 text-xs sm:text-sm font-bold border border-emerald-500/40 shadow-lg shadow-emerald-950/40 transition-all active:scale-95 shrink-0"
+          className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-violet-400 hover:text-violet-300 text-xs sm:text-sm font-bold border border-violet-500/40 shadow-lg shadow-violet-950/40 transition-all active:scale-95 shrink-0"
         >
-          <Printer className="w-4 h-4 text-emerald-400" />
+          <Printer className="w-4 h-4 text-violet-400" />
           <span>{t.btnPrintReport}</span>
         </button>
 
@@ -89,14 +89,14 @@ export default function TreatmentTabs({ result, lang = 'en', onPrintReport }) {
           {activeResult.organicRemedies?.map((remedy, idx) => (
             <div
               key={idx}
-              className="rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-emerald-500/50 p-5 flex flex-col justify-between transition-all duration-300 shadow-xl"
+              className="rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-violet-500/50 p-5 flex flex-col justify-between transition-all duration-300 shadow-xl"
             >
               <div>
                 <div className="flex items-center justify-between gap-2 mb-3">
-                  <span className="w-8 h-8 rounded-lg bg-emerald-950 border border-emerald-700/50 flex items-center justify-center text-emerald-400 font-bold text-xs">
+                  <span className="w-8 h-8 rounded-lg bg-violet-950 border border-violet-700/50 flex items-center justify-center text-violet-400 font-bold text-xs">
                     0{idx + 1}
                   </span>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-900/60 text-emerald-300 border border-emerald-700/50 uppercase tracking-wider">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-violet-900/60 text-violet-300 border border-violet-700/50 uppercase tracking-wider">
                     Bio-Agent
                   </span>
                 </div>
@@ -108,7 +108,7 @@ export default function TreatmentTabs({ result, lang = 'en', onPrintReport }) {
                 <div className="space-y-2 text-xs pt-2">
                   <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800/80">
                     <span className="text-[10px] uppercase font-semibold text-slate-400 flex items-center gap-1 mb-1">
-                      <Droplets className="w-3 h-3 text-emerald-400" />
+                      <Droplets className="w-3 h-3 text-violet-400" />
                       Dosage & Dilution:
                     </span>
                     <p className="text-slate-200 font-medium">
@@ -140,8 +140,8 @@ export default function TreatmentTabs({ result, lang = 'en', onPrintReport }) {
       {activeTab === 'chemical' && (
         <div className="space-y-6 animate-fadeIn">
           {isHealthyCrop ? (
-            <div className="p-4 rounded-xl bg-emerald-950/50 border border-emerald-500/50 text-emerald-300 text-xs flex items-center gap-2.5 shadow-md">
-              <CheckCircle2 className="w-5 h-5 shrink-0 text-emerald-400" />
+            <div className="p-4 rounded-xl bg-violet-950/50 border border-violet-500/50 text-violet-300 text-xs flex items-center gap-2.5 shadow-md">
+              <CheckCircle2 className="w-5 h-5 shrink-0 text-violet-400" />
               <span className="leading-relaxed font-medium">
                 {t.healthyFungicideNotice || 'Status: Foliage is completely healthy. Chemical fungicides are NOT recommended or required. Displaying preventive micronutrient and foliar maintenance guidelines.'}
               </span>
@@ -161,7 +161,7 @@ export default function TreatmentTabs({ result, lang = 'en', onPrintReport }) {
                 key={idx}
                 className={`rounded-2xl bg-slate-900/90 border p-5 flex flex-col justify-between transition-all duration-300 shadow-xl group ${
                   isHealthyCrop
-                    ? 'border-slate-800 hover:border-emerald-500/50 hover:shadow-emerald-500/10'
+                    ? 'border-slate-800 hover:border-violet-500/50 hover:shadow-violet-500/10'
                     : 'border-slate-800 hover:border-amber-500/50 hover:shadow-amber-500/10'
                 }`}
               >
@@ -169,14 +169,14 @@ export default function TreatmentTabs({ result, lang = 'en', onPrintReport }) {
                   <div className="flex items-center justify-between gap-2 mb-3">
                     <span className={`w-8 h-8 rounded-lg border flex items-center justify-center font-bold text-xs shadow-inner ${
                       isHealthyCrop
-                        ? 'bg-emerald-950 border-emerald-700/50 text-emerald-400'
+                        ? 'bg-violet-950 border-violet-700/50 text-violet-400'
                         : 'bg-amber-950 border-amber-700/50 text-amber-400'
                     }`}>
                       0{idx + 1}
                     </span>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider border ${
                       isHealthyCrop
-                        ? 'bg-emerald-950/80 text-emerald-300 border-emerald-700/60'
+                        ? 'bg-violet-950/80 text-violet-300 border-violet-700/60'
                         : 'bg-amber-950/80 text-amber-300 border-amber-700/60'
                     }`}>
                       {chem.category?.[lang] || chem.category?.en || (isHealthyCrop ? 'Foliar Care' : 'Clinical Fungicide')}
@@ -184,13 +184,13 @@ export default function TreatmentTabs({ result, lang = 'en', onPrintReport }) {
                   </div>
 
                   <h4 className={`font-extrabold text-white text-base mb-1 transition-colors ${
-                    isHealthyCrop ? 'group-hover:text-emerald-300' : 'group-hover:text-amber-300'
+                    isHealthyCrop ? 'group-hover:text-violet-300' : 'group-hover:text-amber-300'
                   }`}>
                     {chem.salt}
                   </h4>
                   {chem.tradeName && (
                     <p className={`text-xs font-mono mb-2 ${
-                      isHealthyCrop ? 'text-emerald-400/90' : 'text-amber-400/90'
+                      isHealthyCrop ? 'text-violet-400/90' : 'text-amber-400/90'
                     }`}>
                       Trade: {chem.tradeName}
                     </p>
@@ -199,7 +199,7 @@ export default function TreatmentTabs({ result, lang = 'en', onPrintReport }) {
                   <div className="space-y-2 text-xs pt-2">
                     <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800/80">
                       <span className="text-[10px] uppercase font-semibold text-slate-400 flex items-center gap-1 mb-1">
-                        <Scale className={`w-3 h-3 ${isHealthyCrop ? 'text-emerald-400' : 'text-amber-400'}`} />
+                        <Scale className={`w-3 h-3 ${isHealthyCrop ? 'text-violet-400' : 'text-amber-400'}`} />
                         Recommended Dosage:
                       </span>
                       <p className="text-slate-100 font-bold">
@@ -226,7 +226,7 @@ export default function TreatmentTabs({ result, lang = 'en', onPrintReport }) {
                   {chem.safetyWaitingPeriod && (
                     <span className={`text-[10px] font-mono border px-2 py-0.5 rounded ml-2 shrink-0 ${
                       isHealthyCrop
-                        ? 'text-emerald-400 bg-emerald-950/60 border-emerald-700/40'
+                        ? 'text-violet-400 bg-violet-950/60 border-violet-700/40'
                         : 'text-amber-400 bg-amber-950/60 border-amber-700/40'
                     }`}>
                       PHI: {chem.safetyWaitingPeriod?.[lang] || chem.safetyWaitingPeriod?.en || chem.safetyWaitingPeriod}

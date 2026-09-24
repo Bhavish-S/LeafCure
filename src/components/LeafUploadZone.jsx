@@ -53,7 +53,7 @@ export default function LeafUploadZone({
       
       {/* Hero Header */}
       <div className="text-center max-w-3xl mx-auto mb-8">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/30 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-3">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-950/80 border border-violet-500/30 text-violet-400 text-xs font-semibold uppercase tracking-wider mb-3">
           <Sparkles className="w-3.5 h-3.5" />
           <span>AgriTech Vision Portal</span>
         </div>
@@ -73,12 +73,12 @@ export default function LeafUploadZone({
         onClick={() => fileInputRef.current && fileInputRef.current.click()}
         className={`relative group cursor-pointer rounded-3xl border-2 border-dashed transition-all duration-300 p-8 sm:p-12 text-center flex flex-col items-center justify-center overflow-hidden ${
           isDragging
-            ? 'border-emerald-400 bg-emerald-950/40 scale-[1.01] shadow-2xl shadow-emerald-500/20'
-            : 'border-slate-700/80 hover:border-emerald-500/60 bg-slate-900/60 hover:bg-slate-900/90 shadow-xl'
+            ? 'border-violet-400 bg-violet-950/40 scale-[1.01] shadow-2xl shadow-violet-500/20'
+            : 'border-slate-700/80 hover:border-violet-500/60 bg-slate-900/60 hover:bg-slate-900/90 shadow-xl'
         }`}
       >
         {/* Subtle background glow on hover */}
-        <div className="absolute -top-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/20 transition-all"></div>
+        <div className="absolute -top-24 -left-24 w-72 h-72 bg-violet-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-violet-500/20 transition-all"></div>
         <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-teal-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-teal-500/20 transition-all"></div>
 
         {/* Hidden File Input */}
@@ -92,7 +92,7 @@ export default function LeafUploadZone({
         />
 
         {/* Upload Icon Badge */}
-        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-lg shadow-emerald-600/30 group-hover:scale-110 transition-transform duration-300 mb-4">
+        <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-violet-600 to-teal-500 flex items-center justify-center text-white shadow-lg shadow-violet-600/30 group-hover:scale-110 transition-transform duration-300 mb-4">
           <UploadCloud className="w-8 h-8 sm:w-10 sm:h-10 animate-bounce" />
         </div>
 
@@ -110,7 +110,7 @@ export default function LeafUploadZone({
             type="button"
             onClick={() => fileInputRef.current && fileInputRef.current.click()}
             disabled={isScanning}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-semibold shadow-md shadow-emerald-600/30 transition-all active:scale-95"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs sm:text-sm font-semibold shadow-md shadow-violet-600/30 transition-all active:scale-95"
           >
             <ImageIcon className="w-4 h-4" />
             <span>Browse Leaf Image</span>
@@ -122,7 +122,7 @@ export default function LeafUploadZone({
             disabled={isScanning}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs sm:text-sm font-medium border border-slate-600 transition-all active:scale-95"
           >
-            <Camera className="w-4 h-4 text-emerald-400" />
+            <Camera className="w-4 h-4 text-violet-400" />
             <span>{t.cameraBtn}</span>
           </button>
 
@@ -141,7 +141,7 @@ export default function LeafUploadZone({
               {t.sampleSectionSubtitle}
             </p>
           </div>
-          <span className="text-[11px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2.5 py-1 rounded-full w-fit">
+          <span className="text-[11px] font-mono text-violet-400 bg-violet-950/60 border border-violet-500/30 px-2.5 py-1 rounded-full w-fit">
             3 Ready-to-Test Clinical Samples
           </span>
         </div>
@@ -156,7 +156,7 @@ export default function LeafUploadZone({
               <div
                 key={sample.id}
                 onClick={() => onSampleSelected(sample.id, sample.sampleImage)}
-                className="group relative cursor-pointer rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-emerald-500/60 transition-all duration-300 overflow-hidden shadow-lg hover:shadow-emerald-500/10 hover:-translate-y-1 flex flex-col justify-between"
+                className="group relative cursor-pointer rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-violet-500/60 transition-all duration-300 overflow-hidden shadow-lg hover:shadow-violet-500/10 hover:-translate-y-1 flex flex-col justify-between"
               >
                 {/* Visual Thumbnail */}
                 <div className="relative aspect-video w-full bg-slate-950 overflow-hidden flex items-center justify-center border-b border-slate-800/80">
@@ -172,7 +172,7 @@ export default function LeafUploadZone({
                         ? 'bg-red-950/90 text-red-400 border-red-700/80'
                         : sample.severity === 'moderate'
                         ? 'bg-amber-950/90 text-amber-400 border-amber-700/80'
-                        : 'bg-emerald-950/90 text-emerald-400 border-emerald-700/80'
+                        : 'bg-violet-950/90 text-violet-400 border-violet-700/80'
                     }`}
                   >
                     {t[sample.severity] || sample.severity}
@@ -187,7 +187,7 @@ export default function LeafUploadZone({
                 {/* Card Content & Details */}
                 <div className="p-4 flex-1 flex flex-col justify-between">
                   <div>
-                    <h4 className="font-bold text-white text-base group-hover:text-emerald-400 transition-colors">
+                    <h4 className="font-bold text-white text-base group-hover:text-violet-400 transition-colors">
                       {sample.diseaseName[lang] || sample.diseaseName.en}
                     </h4>
                     <p className="text-xs text-slate-400 italic mt-0.5">
@@ -200,12 +200,12 @@ export default function LeafUploadZone({
 
                   {/* Instant Analyze Trigger */}
                   <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                    <span className="text-emerald-400 font-mono font-medium">
+                    <span className="text-violet-400 font-mono font-medium">
                       {sample.confidence}% Conf.
                     </span>
                     <button
                       type="button"
-                      className="flex items-center gap-1 font-semibold text-emerald-400 group-hover:text-emerald-300"
+                      className="flex items-center gap-1 font-semibold text-violet-400 group-hover:text-violet-300"
                     >
                       <span>1-Click Test</span>
                       <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />

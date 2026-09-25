@@ -276,7 +276,7 @@ function App() {
         setLang={setLang}
         onNewScan={handleNewScan}
         onScrollToHistory={handleScrollToHistory}
-        historyCount={history.length}
+        history={history}
         session={session}
         onLogin={() => setIsAuthModalOpen(true)}
         onShowMyPlants={() => setActiveTab('myPlants')}

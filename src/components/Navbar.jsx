@@ -2,9 +2,12 @@ import React from 'react';
 import { Sprout, Activity, Globe, History, RefreshCw, User, LogOut } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { APP_TRANSLATIONS } from '../data/pathologyData';
+import { calculateStats } from '../utils/stats';
 
-export default function Navbar({ lang, setLang, onNewScan, onScrollToHistory, historyCount, session, onLogin, onShowMyPlants }) {
+export default function Navbar({ lang, setLang, onNewScan, onScrollToHistory, history, session, onLogin, onShowMyPlants }) {
   const t = APP_TRANSLATIONS[lang] || APP_TRANSLATIONS.en;
+  const historyCount = history?.length || 0;
+  const { streak, badges } = calculateStats(history);
 
   return (
     <header className="sticky top-0 z-40 w-full glass-panel border-b border-slate-800/80 shadow-lg shadow-black/20 no-print">
@@ -35,6 +38,20 @@ export default function Navbar({ lang, setLang, onNewScan, onScrollToHistory, hi
         <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-violet-950/60 border border-violet-500/30 text-violet-400 text-xs font-medium tracking-wide">
           <Activity className="w-3.5 h-3.5 animate-pulse text-violet-400" />
           <span>{t.engineBadge}</span>
+        </div>
+
+        {/* Left/Middle Space for Badges and Streak */}
+        <div className="hidden lg:flex items-center gap-3 flex-1 px-8">
+          {streak > 0 && (
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 font-bold text-xs" title="Daily Scan Streak">
+              🔥 {streak} {streak === 1 ? 'Day' : 'Days'}
+            </div>
+          )}
+          {badges.map(b => (
+            <div key={b.id} className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800/80 text-slate-300 border border-slate-700 font-bold text-xs" title={b.name}>
+              {b.icon} {b.name}
+            </div>
+          ))}
         </div>
 
         {/* Right Navigation & Language Switcher */}

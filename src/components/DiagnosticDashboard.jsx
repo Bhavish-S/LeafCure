@@ -23,6 +23,7 @@ import {
 import LeafCanvasInspector from './LeafCanvasInspector';
 import { supabase } from '../lib/supabase';
 import { APP_TRANSLATIONS, CROP_DISEASE_DATASET } from '../data/pathologyData';
+import { toBlob, toPng } from 'html-to-image';
 
 export default function DiagnosticDashboard({ 
   result, 
@@ -38,7 +39,9 @@ export default function DiagnosticDashboard({
   const [chatHistory, setChatHistory] = React.useState([]);
   const [chatInput, setChatInput] = React.useState('');
   const [isChatLoading, setIsChatLoading] = React.useState(false);
+  const [isSharing, setIsSharing] = React.useState(false);
   const chatBottomRef = React.useRef(null);
+  const cardRef = React.useRef(null);
 
   React.useEffect(() => {
     if (chatBottomRef.current) {
@@ -94,6 +97,45 @@ export default function DiagnosticDashboard({
     }
   };
 
+  const handleShare = async () => {
+    if (!cardRef.current || isSharing) return;
+    setIsSharing(true);
+    try {
+      if (navigator.share && navigator.canShare) {
+        const blob = await toBlob(cardRef.current, { backgroundColor: '#0f172a', cacheBust: true });
+        if (blob) {
+          const file = new File([blob], `floraguard-scan-${activeResult.scanId || 'new'}.png`, { type: 'image/png' });
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              title: 'Plant Diagnosis',
+              text: `Check out this diagnosis for ${activeResult.diseaseName[lang] || activeResult.diseaseName.en}`,
+              files: [file]
+            });
+          }
+        }
+      } else {
+        // Fallback to download
+        const dataUrl = await toPng(cardRef.current, { backgroundColor: '#0f172a', cacheBust: true });
+        const link = document.createElement('a');
+        link.download = `floraguard-scan-${activeResult.scanId || 'new'}.png`;
+        link.href = dataUrl;
+        link.click();
+      }
+    } catch (e) {
+      console.error('Share failed', e);
+      // fallback download
+      try {
+        const dataUrl = await toPng(cardRef.current, { backgroundColor: '#0f172a', cacheBust: true });
+        const link = document.createElement('a');
+        link.download = `floraguard-scan-${activeResult.scanId || 'new'}.png`;
+        link.href = dataUrl;
+        link.click();
+      } catch (e2) {}
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
   const isHealthy = activeResult.severity === 'none';
   const isSevere = activeResult.severity === 'severe';
   const isModerate = activeResult.severity === 'moderate';
@@ -125,7 +167,7 @@ export default function DiagnosticDashboard({
       </div>
 
       {/* Top Main Diagnosis Card */}
-      <div className="relative rounded-3xl glass-panel-glow p-6 sm:p-8 border border-violet-500/30 overflow-hidden shadow-2xl">
+      <div ref={cardRef} className="relative rounded-3xl glass-panel-glow p-6 sm:p-8 border border-violet-500/30 overflow-hidden shadow-2xl">
         
         {/* Background accent ambient light */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -278,10 +320,19 @@ export default function DiagnosticDashboard({
               </p>
             </div>
 
-            {/* Feedback Control */}
-            <div className="mt-6 pt-4 border-t border-slate-800/80 w-full text-center">
+            {/* Feedback & Share Controls */}
+            <div className="mt-6 pt-4 border-t border-slate-800/80 w-full flex flex-col items-center">
+              <button 
+                onClick={handleShare}
+                disabled={isSharing}
+                className="mb-4 w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-violet-600/20 hover:bg-violet-600/40 text-violet-300 font-semibold text-sm transition-colors disabled:opacity-50"
+              >
+                <Share2 className="w-4 h-4" />
+                {isSharing ? 'Generating...' : 'Share Diagnosis'}
+              </button>
+
               {feedback ? (
-                <p className="text-sm font-medium text-teal-400">{t.feedbackThanks}</p>
+                <p className="text-sm font-medium text-teal-400 text-center">{t.feedbackThanks}</p>
               ) : (
                 <>
                   <p className="text-xs text-slate-400 mb-3">{t.feedbackQuestion}</p>

@@ -251,9 +251,9 @@ export const CROP_DISEASE_DATASET = [
         'पत्तियों का समय से पहले गिरना जिससे फल धूप में झुलस जाते हैं।'
       ],
     kn: [
-        '[KN] Dark brown to black necrotic spots with characteristic concentric rings ("[KN] target board"[KN]  pattern).'[KN] ,
-        '[KN] Chlorotic yellow halos surrounding older lesions on lower leaves.'[KN] ,
-        '[KN] Premature defoliation exposing developing tomatoes to sunscald.'[KN] 
+        '[KN] Dark brown to black necrotic spots with characteristic concentric rings ("target board" pattern).',
+        '[KN] Chlorotic yellow halos surrounding older lesions on lower leaves.',
+        '[KN] Premature defoliation exposing developing tomatoes to sunscald.'
       ]
     },
     organicRemedies: [
@@ -414,9 +414,9 @@ export const CROP_DISEASE_DATASET = [
         'पत्तियां सड़ने पर दुर्गंध आती है; कंद जमीन के अंदर भूरे-बैंगनी रंग में सड़ने लगते हैं।'
       ],
     kn: [
-        '[KN] Water-soaked irregular black/dark green lesions rapidly enlarging from leaf tips and margins.'[KN] ,
-        '[KN] Delicate white fluffy fungal mildew growth visible on leaf undersides under humid/foggy conditions.'[KN] ,
-        '[KN] Foul odor emitted as foliage rots; tubers rot underground into brownish-purple dry decay.'[KN] 
+        '[KN] Water-soaked irregular black/dark green lesions rapidly enlarging from leaf tips and margins.',
+        '[KN] Delicate white fluffy fungal mildew growth visible on leaf undersides under humid/foggy conditions.',
+        '[KN] Foul odor emitted as foliage rots; tubers rot underground into brownish-purple dry decay.'
       ]
     },
     organicRemedies: [
@@ -633,9 +633,9 @@ export const CROP_DISEASE_DATASET = [
         'मोमी सुरक्षात्मक परत स्वस्थ और पत्ती की मजबूती उत्कृष्ट है।'
       ],
     kn: [
-        '[KN] Vibrant, deep violet green foliage with intact parallel leaf venation.'[KN] ,
-        '[KN] Zero necrotic lesions, chlorotic haloing, or fungal pustules detected.'[KN] ,
-        '[KN] Waxy cuticle layer intact with strong tensile leaf vigor.'[KN] 
+        '[KN] Vibrant, deep violet green foliage with intact parallel leaf venation.',
+        '[KN] Zero necrotic lesions, chlorotic haloing, or fungal pustules detected.',
+        '[KN] Waxy cuticle layer intact with strong tensile leaf vigor.'
       ]
     },
     organicRemedies: [
@@ -805,9 +805,9 @@ export const CROP_DISEASE_DATASET = [
         'गंभीर मामलों में पत्तियां झड़ जाती हैं; इसका दूसरा मेजबान पौधा जुनिपर (Cedar) है।'
       ],
     kn: [
-        '[KN] Small, bright greenish-yellow spots on upper leaf surface turning vivid orange-red with darker centres.'[KN] ,
-        '[KN] Cluster cups (aecia) erupting like tiny tubes on the underside of older leaf spots.'[KN] ,
-        '[KN] Premature leaf drop in severe cases; secondary alternate host is Eastern Red Cedar.'[KN] 
+        '[KN] Small, bright greenish-yellow spots on upper leaf surface turning vivid orange-red with darker centres.',
+        '[KN] Cluster cups (aecia) erupting like tiny tubes on the underside of older leaf spots.',
+        '[KN] Premature leaf drop in severe cases; secondary alternate host is Eastern Red Cedar.'
       ]
     },
     organicRemedies: [

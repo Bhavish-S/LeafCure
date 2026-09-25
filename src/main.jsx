@@ -15,7 +15,7 @@ Sentry.init({
   replaysOnErrorSampleRate: 1.0,
 });
 
-const ErrorFallback = ({ error, resetError }) => (
+const ErrorFallback = ({ resetError }) => (
   <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-100 p-4 font-sans">
     <div className="bg-slate-900 border border-slate-700 p-8 rounded-2xl max-w-md w-full text-center shadow-xl">
       <div className="w-16 h-16 bg-red-500/20 text-red-400 rounded-full flex items-center justify-center mx-auto mb-4">

@@ -8,6 +8,9 @@ import TreatmentTabs from './components/TreatmentTabs';
 import ScanHistory from './components/ScanHistory';
 import CameraModal from './components/CameraModal';
 import DiagnosticReportPrint from './components/DiagnosticReportPrint';
+import AuthModal from './components/AuthModal';
+import MyPlants from './components/MyPlants';
+import { supabase } from './lib/supabase';
 import { runPathologyInference } from './services/inferenceEngine';
 import { APP_TRANSLATIONS, CROP_DISEASE_DATASET, CLINICAL_CHEMICAL_TREATMENTS } from './data/pathologyData';
 import { Target, UploadCloud, History, Sparkles } from 'lucide-react';
@@ -35,33 +38,92 @@ function App() {
     };
   });
   const [history, setHistory] = useState([]);
+  const [session, setSession] = useState(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const dashboardRef = useRef(null);
   const t = APP_TRANSLATIONS[lang] || APP_TRANSLATIONS.en;
 
-  // Load persistent scan history from localStorage on initial load
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          setHistory(parsed);
-        }
-      }
-    } catch (e) {
-      console.warn('Failed to load history from localStorage', e);
-    }
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  // Save history to localStorage
-  const saveToHistory = (newRecord) => {
-    try {
-      const updated = [newRecord, ...history.filter(h => h.scanId !== newRecord.scanId)].slice(0, 20);
-      setHistory(updated);
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
-    } catch (e) {
-      console.warn('Failed to persist history to localStorage', e);
+  // Load persistent scan history from localStorage or Supabase
+  useEffect(() => {
+    if (session) {
+      // Load from Supabase
+      const fetchScans = async () => {
+        const { data, error } = await supabase
+          .from('scans')
+          .select('*')
+          .order('scanned_at', { ascending: false });
+        
+        if (!error && data) {
+          const formattedHistory = data.map(scan => ({
+            ...scan.diagnosis,
+            imageUrl: scan.image_url,
+            scanId: scan.id,
+            scannedAt: scan.scanned_at
+          }));
+          setHistory(formattedHistory);
+        }
+      };
+      fetchScans();
+    } else {
+      try {
+        const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            setHistory(parsed);
+          }
+        } else {
+          setHistory([]);
+        }
+      } catch (e) {
+        console.warn('Failed to load history from localStorage', e);
+      }
+    }
+  }, [session]);
+
+  // Save history to cloud or localStorage
+  const saveToHistory = async (newRecord) => {
+    const isUpdate = history.some(h => h.scanId === newRecord.scanId);
+    
+    if (session) {
+      if (isUpdate) {
+        await supabase.from('scans').update({ diagnosis: newRecord }).eq('id', newRecord.scanId);
+        setHistory(prev => prev.map(h => h.scanId === newRecord.scanId ? newRecord : h));
+      } else {
+        const { data, error } = await supabase.from('scans').insert([{
+          user_id: session.user.id,
+          image_url: newRecord.imageUrl || newRecord.sampleImage,
+          diagnosis: newRecord
+        }]).select();
+        
+        if (!error && data) {
+          newRecord.scanId = data[0].id;
+          setHistory(prev => [newRecord, ...prev]);
+        }
+      }
+    } else {
+      try {
+        const updated = [newRecord, ...history.filter(h => h.scanId !== newRecord.scanId)].slice(0, 20);
+        setHistory(updated);
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
+      } catch (e) {
+        console.warn('Failed to persist history to localStorage', e);
+      }
     }
   };
 
@@ -207,6 +269,9 @@ function App() {
         onNewScan={handleNewScan}
         onScrollToHistory={handleScrollToHistory}
         historyCount={history.length}
+        session={session}
+        onLogin={() => setIsAuthModalOpen(true)}
+        onShowMyPlants={() => setActiveTab('myPlants')}
       />
 
       {/* Main Content Area: Renders all modules immediately in their working layout positions */}
@@ -317,6 +382,13 @@ function App() {
           />
         </div>
 
+        {/* My Plants Module */}
+        {activeTab === 'myPlants' && (
+          <div id="my-plants">
+            <MyPlants lang={lang} session={session} />
+          </div>
+        )}
+
         {/* Module 4: Saved Diagnostic History Vault */}
         <div id="scan-history">
           <ScanHistory
@@ -325,10 +397,18 @@ function App() {
             onDeleteScan={handleDeleteHistoryItem}
             onClearHistory={handleClearAllHistory}
             lang={lang}
+            isCloudSynced={!!session}
           />
         </div>
 
       </main>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        lang={lang}
+      />
 
       {/* Live Web Camera Modal */}
       <CameraModal

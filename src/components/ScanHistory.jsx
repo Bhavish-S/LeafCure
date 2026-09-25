@@ -4,10 +4,8 @@ import {
   Trash2, 
   ExternalLink, 
   Download, 
-  Clock, 
-  Sparkles, 
-  ShieldAlert,
-  Calendar
+  Cloud,
+  HardDrive
 } from 'lucide-react';
 import { APP_TRANSLATIONS } from '../data/pathologyData';
 
@@ -16,7 +14,8 @@ export default function ScanHistory({
   onSelectScan, 
   onDeleteScan, 
   onClearHistory, 
-  lang 
+  lang,
+  isCloudSynced 
 }) {
   const t = APP_TRANSLATIONS[lang] || APP_TRANSLATIONS.en;
 
@@ -40,9 +39,18 @@ export default function ScanHistory({
           <h3 className="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2">
             <History className="w-6 h-6 text-violet-400" />
             <span>{t.historyTitle}</span>
+            {isCloudSynced ? (
+              <span className="ml-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-teal-900/50 text-teal-400 text-[10px] font-bold border border-teal-800">
+                <Cloud className="w-3 h-3" /> {t.cloudSynced}
+              </span>
+            ) : (
+              <span className="ml-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 text-[10px] font-bold border border-slate-700">
+                <HardDrive className="w-3 h-3" /> {t.localOnly}
+              </span>
+            )}
           </h3>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Persisted locally in browser cache. Scans remain available across page reloads.
+            {isCloudSynced ? 'Scans are securely synced to your cloud account.' : 'Persisted locally in browser cache. Login to sync across devices.'}
           </p>
         </div>
 

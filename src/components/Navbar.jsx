@@ -1,8 +1,9 @@
 import React from 'react';
-import { Sprout, Activity, Globe, History, RefreshCw } from 'lucide-react';
+import { Sprout, Activity, Globe, History, RefreshCw, User, LogOut } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import { APP_TRANSLATIONS } from '../data/pathologyData';
 
-export default function Navbar({ lang, setLang, onNewScan, onScrollToHistory, historyCount }) {
+export default function Navbar({ lang, setLang, onNewScan, onScrollToHistory, historyCount, session, onLogin, onShowMyPlants }) {
   const t = APP_TRANSLATIONS[lang] || APP_TRANSLATIONS.en;
 
   return (
@@ -48,6 +49,33 @@ export default function Navbar({ lang, setLang, onNewScan, onScrollToHistory, hi
             <RefreshCw className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">{t.navNewScan}</span>
           </button>
+
+          {session ? (
+            <>
+              <button
+                onClick={onShowMyPlants}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-600/90 hover:bg-teal-500 text-white text-xs sm:text-sm font-semibold transition-all duration-200 border border-teal-500 shadow-sm shadow-teal-600/30 active:scale-95"
+              >
+                <Sprout className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{t.myPlants}</span>
+              </button>
+              <button
+                onClick={() => supabase.auth.signOut()}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700/80 text-slate-200 text-xs sm:text-sm font-medium transition-all duration-200 border border-slate-700 active:scale-95"
+                title={t.logout}
+              >
+                <LogOut className="w-3.5 h-3.5 text-slate-400" />
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={onLogin}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700/80 text-slate-200 text-xs sm:text-sm font-medium transition-all duration-200 border border-slate-700 active:scale-95"
+            >
+              <User className="w-3.5 h-3.5 text-slate-400" />
+              <span className="hidden sm:inline">{t.login}</span>
+            </button>
+          )}
 
           {/* Saved History Anchor */}
           <button

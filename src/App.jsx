@@ -137,30 +137,27 @@ function App() {
     }
   };
 
-  // Triggered when user selects a local file or dropzone
-  const handleImageUpload = async (imageDataUrl) => {
+  const handleImageUpload = async (imageDataUrl, additionalInfo) => {
     setCurrentImage(imageDataUrl);
     setActiveTab('diagnosis');
-    startDiagnosisPipeline(imageDataUrl, null);
+    startDiagnosisPipeline(imageDataUrl, null, additionalInfo);
   };
 
-  // Triggered when user clicks a Quick-Demo sample leaf card
-  const handleSampleSelected = async (sampleId, sampleImage) => {
+  const handleSampleSelected = async (sampleId, sampleImage, additionalInfo) => {
     setCurrentImage(sampleImage);
     setActiveTab('diagnosis');
-    startDiagnosisPipeline(sampleImage, sampleId);
+    startDiagnosisPipeline(sampleImage, sampleId, additionalInfo);
   };
 
-  // Triggered when user captures snapshot via Camera Modal
-  const handleCameraCapture = (capturedDataUrl) => {
+  const handleCameraCapture = (capturedDataUrl, additionalInfo) => {
     setIsCameraOpen(false);
     setCurrentImage(capturedDataUrl);
     setActiveTab('diagnosis');
-    startDiagnosisPipeline(capturedDataUrl, null);
+    startDiagnosisPipeline(capturedDataUrl, null, additionalInfo);
   };
 
   // Core Diagnosis Pipeline Orchestrator
-  const startDiagnosisPipeline = async (imageSrc, predefinedId) => {
+  const startDiagnosisPipeline = async (imageSrc, predefinedId, additionalInfo = '') => {
     setIsScanning(true);
     setScanProgress(10);
     setTelemetryLogs([]);
@@ -172,7 +169,8 @@ function App() {
         ({ step, text, progress }) => {
           setScanProgress(progress);
           setTelemetryLogs(prev => [...prev, { step, text }]);
-        }
+        },
+        additionalInfo
       );
 
       setActiveDiagnosis(localResult);

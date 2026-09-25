@@ -6,7 +6,7 @@ import { detectLesionsFromImage, generateFallbackLesions } from '../utils/lesion
  * Performs client-side pixel analysis (aspect ratio, RGB balance, necrotic chlorosis clustering)
  * and returns matched pathology data with dynamically generated or predefined bounding boxes.
  */
-export async function runPathologyInference(imageSource, predefinedId = null, onLogUpdate = () => {}) {
+export async function runPathologyInference(imageSource, predefinedId = null, onLogUpdate = () => {}, additionalInfo = '') {
   // If user clicked one of the quick samples, find direct match
   const matchedSample = predefinedId 
     ? CROP_DISEASE_DATASET.find(d => d.id === predefinedId)
@@ -295,7 +295,7 @@ export async function runPathologyInference(imageSource, predefinedId = null, on
       const res = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64: base64Data, mimeType }),
+        body: JSON.stringify({ imageBase64: base64Data, mimeType, additionalInfo }),
         signal: controller.signal
       });
       

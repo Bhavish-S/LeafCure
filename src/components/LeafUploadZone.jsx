@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { UploadCloud, Camera, Image as ImageIcon, Sparkles, CheckCircle2, ChevronRight, Zap } from 'lucide-react';
+import { UploadCloud, Camera, Image as ImageIcon, Sparkles, CheckCircle2, ChevronRight, Zap, Mic, MicOff } from 'lucide-react';
 import { CROP_DISEASE_DATASET, APP_TRANSLATIONS } from '../data/pathologyData';
 
 export default function LeafUploadZone({ 
@@ -12,6 +12,32 @@ export default function LeafUploadZone({
   const t = APP_TRANSLATIONS[lang] || APP_TRANSLATIONS.en;
   const fileInputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [additionalInfo, setAdditionalInfo] = useState('');
+  const [isListening, setIsListening] = useState(false);
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const hasSpeechSupport = !!SpeechRecognition;
+
+  const toggleListen = () => {
+    if (!hasSpeechSupport) return;
+    if (isListening) {
+      setIsListening(false);
+      return;
+    }
+    const recognition = new SpeechRecognition();
+    recognition.lang = lang === 'hi' ? 'hi-IN' : 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    
+    recognition.onstart = () => setIsListening(true);
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setAdditionalInfo((prev) => prev ? prev + ' ' + transcript : transcript);
+    };
+    recognition.onerror = () => setIsListening(false);
+    recognition.onend = () => setIsListening(false);
+    recognition.start();
+  };
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -43,7 +69,7 @@ export default function LeafUploadZone({
     }
     const reader = new FileReader();
     reader.onload = (event) => {
-      onImageSelected(event.target.result);
+      onImageSelected(event.target.result, additionalInfo);
     };
     reader.readAsDataURL(file);
   };
@@ -103,6 +129,32 @@ export default function LeafUploadZone({
           {t.dropzoneSubtitle}
         </p>
 
+        {/* Symptoms Context Area */}
+        <div className="w-full max-w-md mb-6" onClick={(e) => e.stopPropagation()}>
+          <label className="block text-xs font-semibold text-slate-300 mb-2 text-left">
+            Describe symptoms (Optional)
+          </label>
+          <div className="relative">
+            <textarea 
+              value={additionalInfo}
+              onChange={(e) => setAdditionalInfo(e.target.value)}
+              placeholder="e.g. Started turning yellow 3 days ago..."
+              className="w-full bg-slate-800/80 text-white text-sm rounded-xl p-3 pr-12 border border-slate-700 outline-none focus:border-violet-500 transition-colors resize-none h-20"
+            />
+            {hasSpeechSupport && (
+              <button 
+                type="button"
+                onClick={toggleListen}
+                className={`absolute right-2 top-2 p-2 rounded-lg transition-colors ${
+                  isListening ? 'bg-red-500/20 text-red-400 animate-pulse' : 'bg-slate-700/50 text-slate-400 hover:text-white'
+                }`}
+              >
+                {isListening ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Action Buttons inside dropzone */}
         <div className="flex flex-wrap items-center justify-center gap-3" onClick={(e) => e.stopPropagation()}>
           
@@ -155,7 +207,7 @@ export default function LeafUploadZone({
             return (
               <div
                 key={sample.id}
-                onClick={() => onSampleSelected(sample.id, sample.sampleImage)}
+                onClick={() => onSampleSelected(sample.id, sample.sampleImage, additionalInfo)}
                 className="group relative cursor-pointer rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-violet-500/60 transition-all duration-300 overflow-hidden shadow-lg hover:shadow-violet-500/10 hover:-translate-y-1 flex flex-col justify-between"
               >
                 {/* Visual Thumbnail */}

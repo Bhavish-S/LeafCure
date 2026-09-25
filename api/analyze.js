@@ -50,7 +50,7 @@ export default async function handler(req, res) {
     }
   }
 
-  const { imageBase64, mimeType } = req.body;
+  const { imageBase64, mimeType, additionalInfo } = req.body;
   
   if (!imageBase64 || !mimeType) {
     return res.status(400).json({ error: 'Missing imageBase64 or mimeType' });
@@ -62,7 +62,9 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid mime type. Only image/jpeg, image/png, and image/webp are allowed.' });
   }
 
-  const prompt = `Act as a plant pathologist and analyze this image. Return ONLY strict JSON in the exact following structure. 
+  const prompt = `Act as a plant pathologist and analyze this image. 
+${additionalInfo ? `The user also verbally described these symptoms: "${additionalInfo}". Take this into account.` : ''}
+Return ONLY strict JSON in the exact following structure. 
 For any text intended for the user, provide an object with 'en' and 'hi' (Hindi) keys (e.g. { "en": "English text", "hi": "हिंदी पाठ" }).
 Strict JSON schema:
 {

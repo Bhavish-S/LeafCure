@@ -15,7 +15,10 @@ import {
   ChevronUp,
   ThumbsUp,
   ThumbsDown,
-  Info
+  Info,
+  MessageSquare,
+  Send,
+  Bot
 } from 'lucide-react';
 import LeafCanvasInspector from './LeafCanvasInspector';
 import { supabase } from '../lib/supabase';
@@ -31,6 +34,55 @@ export default function DiagnosticDashboard({
 
   const [isWhyExpanded, setIsWhyExpanded] = React.useState(false);
   const [feedback, setFeedback] = React.useState(null);
+  const [isChatOpen, setIsChatOpen] = React.useState(false);
+  const [chatHistory, setChatHistory] = React.useState([]);
+  const [chatInput, setChatInput] = React.useState('');
+  const [isChatLoading, setIsChatLoading] = React.useState(false);
+  const chatBottomRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (chatBottomRef.current) {
+      chatBottomRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatHistory, isChatLoading]);
+
+  // Reset chat when viewing a different scan
+  React.useEffect(() => {
+    setChatHistory([]);
+    setIsChatOpen(false);
+  }, [activeResult?.scanId]);
+
+  const handleChatSubmit = async (e) => {
+    e.preventDefault();
+    if (!chatInput.trim() || isChatLoading) return;
+
+    const userMessage = chatInput;
+    setChatInput('');
+    setChatHistory(prev => [...prev, { role: 'user', content: userMessage }]);
+    setIsChatLoading(true);
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          diagnosisContext: activeResult,
+          message: userMessage,
+          history: chatHistory
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setChatHistory(prev => [...prev, { role: 'model', content: data.reply }]);
+      } else {
+        setChatHistory(prev => [...prev, { role: 'model', content: 'Sorry, I encountered an error. Please try again.' }]);
+      }
+    } catch (err) {
+      setChatHistory(prev => [...prev, { role: 'model', content: 'Failed to connect to the assistant.' }]);
+    } finally {
+      setIsChatLoading(false);
+    }
+  };
 
   const handleFeedback = async (wasCorrect) => {
     setFeedback(wasCorrect ? 'up' : 'down');
@@ -255,6 +307,77 @@ export default function DiagnosticDashboard({
 
         </div>
 
+      </div>
+
+      {/* AI Chat Follow-up Panel */}
+      <div className="rounded-2xl border border-violet-500/30 bg-slate-900/60 overflow-hidden shadow-xl">
+        <button
+          onClick={() => setIsChatOpen(!isChatOpen)}
+          className="w-full px-6 py-4 flex items-center justify-between text-left font-bold text-white hover:bg-slate-800/80 transition-colors"
+        >
+          <span className="flex items-center gap-3">
+            <div className="p-1.5 rounded-lg bg-violet-500/20 text-violet-400">
+              <MessageSquare className="w-5 h-5" />
+            </div>
+            Ask follow-up questions
+          </span>
+          {isChatOpen ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+        </button>
+
+        {isChatOpen && (
+          <div className="p-4 sm:p-6 border-t border-slate-800 flex flex-col h-[400px]">
+            {/* Chat Messages */}
+            <div className="flex-1 overflow-y-auto pr-2 space-y-4 mb-4 custom-scrollbar">
+              {chatHistory.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-slate-500 space-y-3">
+                  <Bot className="w-10 h-10 opacity-50" />
+                  <p className="text-sm text-center">Ask me anything about this diagnosis.<br/>"Is this contagious to other plants?"<br/>"Can I eat the unaffected parts?"</p>
+                </div>
+              ) : (
+                chatHistory.map((msg, idx) => (
+                  <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                      msg.role === 'user' 
+                        ? 'bg-violet-600 text-white rounded-tr-none' 
+                        : 'bg-slate-800 text-slate-200 border border-slate-700 rounded-tl-none'
+                    }`}>
+                      {msg.content}
+                    </div>
+                  </div>
+                ))
+              )}
+              {isChatLoading && (
+                <div className="flex justify-start">
+                  <div className="max-w-[85%] rounded-2xl px-4 py-3 bg-slate-800 text-slate-400 border border-slate-700 rounded-tl-none flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-violet-400 animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                    <span className="w-2 h-2 rounded-full bg-violet-400 animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                    <span className="w-2 h-2 rounded-full bg-violet-400 animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                  </div>
+                </div>
+              )}
+              <div ref={chatBottomRef} />
+            </div>
+
+            {/* Chat Input Area */}
+            <form onSubmit={handleChatSubmit} className="relative flex items-center">
+              <input
+                type="text"
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                placeholder="Ask about this diagnosis..."
+                disabled={isChatLoading}
+                className="w-full bg-slate-950 border border-slate-700 rounded-xl py-3 pl-4 pr-12 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors disabled:opacity-50"
+              />
+              <button
+                type="submit"
+                disabled={!chatInput.trim() || isChatLoading}
+                className="absolute right-2 p-2 rounded-lg text-slate-400 hover:text-violet-400 hover:bg-slate-800 disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-slate-400 transition-colors"
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            </form>
+          </div>
+        )}
       </div>
 
       {/* Visual Leaf Inspector Canvas Engine */}

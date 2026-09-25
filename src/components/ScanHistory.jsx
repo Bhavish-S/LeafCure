@@ -178,6 +178,7 @@ export default function ScanHistory({
                       onClick={() => onDeleteScan(item.scanId || item.scannedAt)}
                       className="text-slate-500 hover:text-red-400 p-1 rounded transition-colors ml-auto"
                       title={t.deleteScan}
+                      aria-label={t.deleteScan}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>

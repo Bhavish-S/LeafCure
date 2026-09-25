@@ -93,6 +93,42 @@ FloraGuard AI (also known as PlantCure AI) is an advanced, offline-capable plant
 
 ---
 
+## 🔌 API Documentation
+
+### `POST /api/analyze`
+Analyzes a base64 encoded image of a plant leaf and returns a structured AI diagnosis.
+**Request Body (JSON):**
+```json
+{
+  "imageBase64": "data:image/jpeg;base64,...",
+  "mimeType": "image/jpeg",
+  "additionalInfo": "Optional context like symptoms or region"
+}
+```
+**Response (200 OK):** JSON containing diagnosis, treatments (organic/chemical), severity, and care tips. Rate-limited to 10 requests/hour per IP.
+
+### `POST /api/chat`
+Answers follow-up questions based on the initial diagnosis context.
+**Request Body (JSON):**
+```json
+{
+  "diagnosisContext": { /* Output from /api/analyze */ },
+  "history": [
+    { "role": "user", "content": "..." },
+    { "role": "model", "content": "..." }
+  ],
+  "message": "Is this safe for pets?"
+}
+```
+**Response (200 OK):**
+```json
+{
+  "reply": "Yes, this organic treatment is safe for pets..."
+}
+```
+
+---
+
 ## 🛡️ Disclaimer
 **FloraGuard AI is an AI-assisted tool and is NOT a substitute for a professional agronomist.** 
 Recommendations regarding chemical treatments and organic remedies should be verified with local agricultural authorities before application.

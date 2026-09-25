@@ -1,3 +1,10 @@
+import * as Sentry from '@sentry/node';
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN || "",
+  tracesSampleRate: 1.0,
+});
+
 export default async function handler(req, res) {
   // CORS Configuration
   const allowedOrigin = process.env.ALLOWED_ORIGIN || '*';
@@ -54,6 +61,7 @@ If the user asks something completely unrelated to plants, gently steer them bac
 
     return res.status(200).json({ reply: textResponse });
   } catch (error) {
+    Sentry.captureException(error);
     console.error('Chat API Error:', error);
     return res.status(502).json({ error: 'Failed to process chat request' });
   }

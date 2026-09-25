@@ -1,5 +1,6 @@
 import { CROP_DISEASE_DATASET, CLINICAL_CHEMICAL_TREATMENTS, HEALTHY_MAINTENANCE_TREATMENTS } from '../data/pathologyData.js';
 import { detectLesionsFromImage, generateFallbackLesions } from '../utils/lesionDetector.js';
+import { compressImage, hashImage } from '../utils/imageUtils.js';
 
 /**
  * Analyzes an image loaded into a canvas buffer.
@@ -11,6 +12,34 @@ export async function runPathologyInference(imageSource, predefinedId = null, on
   const matchedSample = predefinedId 
     ? CROP_DISEASE_DATASET.find(d => d.id === predefinedId)
     : null;
+
+  let finalImageSource = imageSource;
+  let imageHash = null;
+
+  if (imageSource.startsWith('data:image')) {
+    onLogUpdate({
+      step: 0,
+      text: 'Compressing image client-side to minimize latency and token cost...',
+      progress: 5
+    });
+    try {
+      finalImageSource = await compressImage(imageSource, 1024, 0.8);
+      imageHash = await hashImage(finalImageSource);
+      
+      const cached = localStorage.getItem(`diagnosis_cache_${imageHash}`);
+      if (cached) {
+        onLogUpdate({
+          step: 5,
+          text: 'Found cached diagnostic result for this exact image. Loading instantly...',
+          progress: 100
+        });
+        const cachedObj = JSON.parse(cached);
+        return { localResult: { ...cachedObj, imageUrl: finalImageSource }, aiPromise: null };
+      }
+    } catch (e) {
+      console.warn('Compression/Hashing failed:', e);
+    }
+  }
 
   onLogUpdate({
     step: 1,
@@ -27,7 +56,7 @@ export async function runPathologyInference(imageSource, predefinedId = null, on
   });
 
   // Client-side pixel analysis using Canvas
-  const analysis = await analyzeImagePixels(imageSource);
+  const analysis = await analyzeImagePixels(finalImageSource);
 
   await sleep(450);
 
@@ -75,7 +104,7 @@ export async function runPathologyInference(imageSource, predefinedId = null, on
   if (matchedSample) {
     finalResult = {
       ...matchedSample,
-      imageUrl: imageSource,
+      imageUrl: finalImageSource,
       scannedAt: new Date().toISOString(),
       scanId: `FLORA-${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
       chemicalTreatments: matchedSample.chemicalTreatments || matchedSample.chemicalInterventions || (matchedSample.severity === 'none' ? HEALTHY_MAINTENANCE_TREATMENTS : CLINICAL_CHEMICAL_TREATMENTS),
@@ -123,7 +152,7 @@ export async function runPathologyInference(imageSource, predefinedId = null, on
           'कोशिका भित्ति की मजबूती उत्कृष्ट और क्लोरोफिल घनत्व इष्टतम है।'
         ]
       },
-      imageUrl: imageSource,
+      imageUrl: finalImageSource,
       scannedAt: new Date().toISOString(),
       scanId: `FLORA-${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
       lesions: [],
@@ -250,7 +279,7 @@ export async function runPathologyInference(imageSource, predefinedId = null, on
           'क्लोरोफिल के तीव्र विनाश के साथ पत्ती के किनारों का सड़ना।'
         ]
       },
-      imageUrl: imageSource,
+      imageUrl: finalImageSource,
       scannedAt: new Date().toISOString(),
       scanId: `FLORA-${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
       lesions: lesionsList,
@@ -268,16 +297,17 @@ export async function runPathologyInference(imageSource, predefinedId = null, on
       const timeoutId = setTimeout(() => controller.abort(), 8000);
       
       let mimeType = 'image/jpeg';
-      let base64Data = imageSource;
+      let base64Data = finalImageSource;
       
-      if (imageSource.startsWith('data:')) {
-        const match = imageSource.match(/^data:(image\/\w+);base64,/);
+      if (finalImageSource.startsWith('data:')) {
+        const match = finalImageSource.match(/^data:(image\/\w+);base64,/);
         if (match) {
           mimeType = match[1];
         }
       } else {
         const img = new Image();
-        img.src = imageSource;
+        img.crossOrigin = 'anonymous';
+        img.src = finalImageSource;
         await new Promise((resolve, reject) => {
            img.onload = resolve;
            img.onerror = reject;
@@ -304,7 +334,7 @@ export async function runPathologyInference(imageSource, predefinedId = null, on
       if (!res.ok) throw new Error('API returned ' + res.status);
       const data = await res.json();
       
-      return {
+      const finalMergedResult = {
         ...finalResult,
         cropName: data.plant_type || finalResult.cropName,
         diseaseName: data.disease_name || finalResult.diseaseName,
@@ -320,6 +350,12 @@ export async function runPathologyInference(imageSource, predefinedId = null, on
         organicRemedies: data.treatment_organic || finalResult.organicRemedies,
         preventiveAdvisory: data.prevention_tips || finalResult.preventiveAdvisory
       };
+      
+      if (imageHash) {
+        localStorage.setItem(`diagnosis_cache_${imageHash}`, JSON.stringify(finalMergedResult));
+      }
+      
+      return finalMergedResult;
     } catch (e) {
       console.warn('Gemini AI deep analysis failed or timed out:', e);
       return null;

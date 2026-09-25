@@ -1,13 +1,55 @@
 @import "tailwindcss";
 
-@layer base {
+@theme {
+  --color-slate-950: var(--theme-slate-950);
+  --color-slate-900: var(--theme-slate-900);
+  --color-slate-800: var(--theme-slate-800);
+  --color-slate-700: var(--theme-slate-700);
+  --color-slate-400: var(--theme-slate-400);
+  --color-slate-300: var(--theme-slate-300);
+  --color-slate-200: var(--theme-slate-200);
+  --color-slate-100: var(--theme-slate-100);
+  --color-white: var(--theme-white);
+  --color-violet-950: var(--theme-violet-950);
+  --color-indigo-950: var(--theme-indigo-950);
+}
+
+:root {
+  /* Default Dark Theme Colors */
+  --theme-slate-950: #020617;
+  --theme-slate-900: #0f172a;
+  --theme-slate-800: #1e293b;
+  --theme-slate-700: #334155;
+  --theme-slate-400: #94a3b8;
+  --theme-slate-300: #cbd5e1;
+  --theme-slate-200: #e2e8f0;
+  --theme-slate-100: #f1f5f9;
+  --theme-white: #ffffff;
+  --theme-violet-950: #2e1065;
+  --theme-indigo-950: #1e1b4b;
+}
+
+[data-theme="light"] {
+  /* Light Theme Overrides (Reversed) */
+  --theme-slate-950: #f8fafc;
+  --theme-slate-900: #f1f5f9;
+  --theme-slate-800: #e2e8f0;
+  --theme-slate-700: #cbd5e1;
+  --theme-slate-400: #475569;
+  --theme-slate-300: #334155;
+  --theme-slate-200: #1e293b;
+  --theme-slate-100: #0f172a;
+  --theme-white: #020617;
+  --theme-violet-950: #f5f3ff;
+  --theme-indigo-950: #eef2ff;
+}@layer base {
   html {
     scroll-behavior: smooth;
   }
   body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background-color: #0b1120;
-    color: #f1f5f9;
+    background-color: var(--theme-slate-950);
+    color: var(--theme-slate-100);
   }
   code, pre, .font-mono {
     font-family: 'JetBrains Mono', monospace;
@@ -44,10 +86,10 @@
 
 /* Glassmorphism Classes */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.75);
+  background: color-mix(in srgb, var(--theme-slate-900) 75%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid color-mix(in srgb, var(--theme-white) 8%, transparent);
 }
 
 .glass-panel-glow {
@@ -63,10 +105,10 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: color-mix(in srgb, var(--theme-slate-900) 60%, transparent);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(51, 65, 85, 0.8);
+  background: color-mix(in srgb, var(--theme-slate-700) 80%, transparent);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {

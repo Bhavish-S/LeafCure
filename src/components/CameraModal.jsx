@@ -159,6 +159,7 @@ export default function CameraModal({ isOpen, onClose, onCapture, lang }) {
           <button
             onClick={onClose}
             className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            aria-label={t.closeModal}
           >
             <X className="w-5 h-5" />
           </button>

@@ -1,5 +1,11 @@
 import { Redis } from '@upstash/redis';
 import { Ratelimit } from '@upstash/ratelimit';
+import * as Sentry from '@sentry/node';
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN || "",
+  tracesSampleRate: 1.0,
+});
 
 export const config = {
   api: {
@@ -65,43 +71,43 @@ export default async function handler(req, res) {
   const prompt = `Act as a plant pathologist and analyze this image. 
 ${additionalInfo ? `The user provided this context (symptoms, region, season, etc.): "${additionalInfo}". If a region and season are provided, MUST factor that into likely_cause and treatment_organic recommendations (e.g. accounting for local weather, endemic pests, or locally available organic materials).` : ''}
 Return ONLY strict JSON in the exact following structure. 
-For any text intended for the user, provide an object with 'en' and 'hi' (Hindi) keys (e.g. { "en": "English text", "hi": "हिंदी पाठ" }).
+For any text intended for the user, provide an object with 'en', 'hi' (Hindi), and 'kn' (Kannada) keys (e.g. { "en": "English text", "hi": "हिंदी पाठ", "kn": "ಕನ್ನಡ ಪಠ್ಯ" }).
 Strict JSON schema:
 {
-  "plant_type": { "en": "...", "hi": "..." },
-  "disease_name": { "en": "...", "hi": "..." },
+  "plant_type": { "en": "...", "hi": "...", "kn": "..." },
+  "disease_name": { "en": "...", "hi": "...", "kn": "..." },
   "scientific_name": "...",
   "confidence_percent": 95,
   "severity": "none" | "mild" | "moderate" | "severe",
   "affected_area_pct": 10,
-  "prognosis": { "en": "...", "hi": "..." },
-  "symptoms_observed": { "en": ["..."], "hi": ["..."] },
-  "likely_cause": { "en": "...", "hi": "..." },
+  "prognosis": { "en": "...", "hi": "...", "kn": "..." },
+  "symptoms_observed": { "en": ["..."], "hi": ["..."], "kn": ["..."] },
+  "likely_cause": { "en": "...", "hi": "...", "kn": "..." },
   "treatment_organic": [
     {
-      "title": { "en": "...", "hi": "..." },
-      "dosage": { "en": "...", "hi": "..." },
-      "schedule": { "en": "...", "hi": "..." },
-      "mechanism": { "en": "...", "hi": "..." }
+      "title": { "en": "...", "hi": "...", "kn": "..." },
+      "dosage": { "en": "...", "hi": "...", "kn": "..." },
+      "schedule": { "en": "...", "hi": "...", "kn": "..." },
+      "mechanism": { "en": "...", "hi": "...", "kn": "..." }
     }
   ],
   "treatment_chemical": [
     {
-      "title": { "en": "...", "hi": "..." },
-      "dosage": { "en": "...", "hi": "..." },
-      "schedule": { "en": "...", "hi": "..." },
-      "mechanism": { "en": "...", "hi": "..." }
+      "title": { "en": "...", "hi": "...", "kn": "..." },
+      "dosage": { "en": "...", "hi": "...", "kn": "..." },
+      "schedule": { "en": "...", "hi": "...", "kn": "..." },
+      "mechanism": { "en": "...", "hi": "...", "kn": "..." }
     }
   ],
   "prevention_tips": [
     {
-      "category": { "en": "...", "hi": "..." },
-      "action": { "en": "...", "hi": "..." }
+      "category": { "en": "...", "hi": "...", "kn": "..." },
+      "action": { "en": "...", "hi": "...", "kn": "..." }
     }
   ],
   "is_healthy": false,
-  "plant_species_guess": { "en": "...", "hi": "..." },
-  "care_tips": { "en": ["..."], "hi": ["..."] }
+  "plant_species_guess": { "en": "...", "hi": "...", "kn": "..." },
+  "care_tips": { "en": ["..."], "hi": ["..."], "kn": ["..."] }
 }
 Note: If is_healthy is true, provide a good plant_species_guess and 2-3 general care_tips for that plant.`;
 
@@ -152,6 +158,7 @@ Note: If is_healthy is true, provide a good plant_species_guess and 2-3 general 
     
     return res.status(200).json(jsonResult);
   } catch (error) {
+    Sentry.captureException(error);
     console.error('Gemini API Error:', error);
     return res.status(502).json({ error: 'Failed to process image with AI' });
   }

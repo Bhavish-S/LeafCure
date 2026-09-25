@@ -1,5 +1,5 @@
-import React from 'react';
-import { Sprout, Activity, Globe, History, RefreshCw, User, LogOut } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Sprout, Activity, Globe, History, RefreshCw, User, LogOut, Sun, Moon } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { APP_TRANSLATIONS } from '../data/pathologyData';
 import { calculateStats } from '../utils/stats';
@@ -8,6 +8,17 @@ export default function Navbar({ lang, setLang, onNewScan, onScrollToHistory, hi
   const t = APP_TRANSLATIONS[lang] || APP_TRANSLATIONS.en;
   const historyCount = history?.length || 0;
   const { streak, badges } = calculateStats(history);
+  
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('plantcure_theme') || 'dark';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('plantcure_theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
   return (
     <header className="sticky top-0 z-40 w-full glass-panel border-b border-slate-800/80 shadow-lg shadow-black/20 no-print">
@@ -80,6 +91,7 @@ export default function Navbar({ lang, setLang, onNewScan, onScrollToHistory, hi
                 onClick={() => supabase.auth.signOut()}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700/80 text-slate-200 text-xs sm:text-sm font-medium transition-all duration-200 border border-slate-700 active:scale-95"
                 title={t.logout}
+                aria-label={t.logout}
               >
                 <LogOut className="w-3.5 h-3.5 text-slate-400" />
               </button>
@@ -109,10 +121,21 @@ export default function Navbar({ lang, setLang, onNewScan, onScrollToHistory, hi
             )}
           </button>
 
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            className="p-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-700/80 text-slate-200 border border-slate-700 transition-all active:scale-95"
+            aria-label="Toggle Light/Dark Theme"
+            title="Toggle Theme"
+          >
+            {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-violet-600" />}
+          </button>
+
           {/* Language Switcher Button */}
-          <div className="flex items-center bg-slate-800/90 rounded-lg p-0.5 border border-slate-700">
+          <div className="flex items-center bg-slate-800/90 rounded-lg p-0.5 border border-slate-700" aria-label="Language Switcher">
             <button
               onClick={() => setLang('en')}
+              aria-label="Switch to English"
               className={`px-2 py-1 text-xs font-semibold rounded-md transition-all ${
                 lang === 'en'
                   ? 'bg-violet-500 text-slate-950 shadow-sm'
@@ -123,6 +146,7 @@ export default function Navbar({ lang, setLang, onNewScan, onScrollToHistory, hi
             </button>
             <button
               onClick={() => setLang('hi')}
+              aria-label="Switch to Hindi"
               className={`px-2 py-1 text-xs font-semibold rounded-md transition-all ${
                 lang === 'hi'
                   ? 'bg-violet-500 text-slate-950 shadow-sm'
@@ -130,6 +154,17 @@ export default function Navbar({ lang, setLang, onNewScan, onScrollToHistory, hi
               }`}
             >
               हिन्दी
+            </button>
+            <button
+              onClick={() => setLang('kn')}
+              aria-label="Switch to Kannada"
+              className={`px-2 py-1 text-xs font-semibold rounded-md transition-all ${
+                lang === 'kn'
+                  ? 'bg-violet-500 text-slate-950 shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              ಕನ್ನಡ
             </button>
           </div>
 

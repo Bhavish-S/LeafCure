@@ -10,6 +10,7 @@ import CameraModal from './components/CameraModal';
 import DiagnosticReportPrint from './components/DiagnosticReportPrint';
 import AuthModal from './components/AuthModal';
 import MyPlants from './components/MyPlants';
+import PrivacyModal from './components/PrivacyModal';
 import { supabase } from './lib/supabase';
 import { runPathologyInference } from './services/inferenceEngine';
 import { APP_TRANSLATIONS, CROP_DISEASE_DATASET, CLINICAL_CHEMICAL_TREATMENTS } from './data/pathologyData';
@@ -40,6 +41,7 @@ function App() {
   const [history, setHistory] = useState([]);
   const [session, setSession] = useState(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
 
   const dashboardRef = useRef(null);
   const t = APP_TRANSLATIONS[lang] || APP_TRANSLATIONS.en;
@@ -439,15 +441,27 @@ function App() {
           <p className="text-slate-400">
             © {new Date().getFullYear()} PlantCure AI – Precision Agronomy & Plant Pathology. All rights reserved.
           </p>
-          <div className="flex items-center gap-4 text-slate-400">
+          <div className="flex items-center gap-4 text-slate-400 flex-wrap justify-center">
+            <button 
+              onClick={() => setIsPrivacyModalOpen(true)}
+              className="text-violet-400 hover:text-violet-300 hover:underline transition-colors font-medium"
+            >
+              Privacy Policy & Disclaimer
+            </button>
+            <span className="hidden sm:inline">•</span>
             <span>Client-Side Neural Inference Engine</span>
-            <span>•</span>
+            <span className="hidden sm:inline">•</span>
             <span>HTML5 Canvas Retinal Layer</span>
-            <span>•</span>
+            <span className="hidden sm:inline">•</span>
             <span>Zero Server Setup</span>
           </div>
         </div>
       </footer>
+
+      <PrivacyModal 
+        isOpen={isPrivacyModalOpen}
+        onClose={() => setIsPrivacyModalOpen(false)}
+      />
 
     </div>
   );

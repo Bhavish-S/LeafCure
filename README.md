@@ -1,23 +1,98 @@
-# React + Vite
+# FloraGuard AI 🌱
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+FloraGuard AI (also known as PlantCure AI) is an advanced, offline-capable plant pathology and diagnostic engine. It uses a custom **Local Heuristic Pixel Engine** to instantly detect lesions, chlorosis, and necrosis on plant leaves directly in the browser, before deferring to **Gemini 2.0 Flash** for deep agronomical analysis, chemical interventions, and organic remedy generation.
 
-Currently, two official plugins are available:
+## 🚀 Live Demo
+[https://agricure-ai-main.vercel.app](https://agricure-ai-main.vercel.app) *(Replace with your Vercel URL)*
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## Setup AI Engine
+## 🏗️ Architecture
 
-This project uses Gemini 2.0 Flash for deep plant pathology analysis.
-1. Get an API key from [Google AI Studio](https://aistudio.google.com/apikey).
-2. Create a `.env.local` file from `.env.example` and add your key: `GEMINI_API_KEY=your_key`
-3. When deploying to Vercel, add `GEMINI_API_KEY` to the Environment Variables settings.
+```ascii
+                      +-------------------+
+                      |   Mobile / Web    | 
+                      |   (Vite + React)  |
+                      +---------+---------+
+                                |
+                   (1) Upload / Camera / Voice
+                                |
+                      +---------v---------+
+                      | Local Canvas Engine |  <-- (2) Pixel-perfect lesion clustering
+                      | (lesionDetector.js)|      Calculates affected area & health index
+                      +---------+---------+
+                                |
+                                | (3) Send base64 image & symptoms
+                                v
+                      +---------+---------+
+                      | Next.js API Route |  <-- (4) Rate Limiting (Upstash Redis)
+                      |  (/api/analyze)   |
+                      +---------+---------+
+                                |
+                                | (5) Call Gemini API
+                                v
+                      +---------+---------+
+                      | Gemini 2.0 Flash  |  <-- Returns strictly structured JSON:
+                      +-------------------+      (prognosis, treatments, tips)
+                                |
+                                | (6) Display results
+                                v
+                      +---------+---------+
+                      |   Supabase Auth & |  <-- (7) Sync "Scan History" & "My Plants"
+                      |   PostgreSQL DB   |      (Offline users save to localStorage)
+                      +-------------------+
+```
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠️ Tech Stack
 
-## Expanding the Oxlint configuration
+| Component | Technology |
+|---|---|
+| **Frontend Framework** | React 18, Vite |
+| **Styling** | Tailwind CSS v4, Lucide React Icons |
+| **AI / Inference** | Google Gemini 2.0 Flash API |
+| **Backend / Edge Functions** | Vercel Serverless Functions |
+| **Database & Auth** | Supabase (PostgreSQL, Magic Link Auth) |
+| **Rate Limiting** | Upstash Redis |
+| **PWA / Offline** | `vite-plugin-pwa`, LocalStorage sync queue |
+| **Testing** | Vitest |
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+---
+
+## 💻 Local Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Bhavish-S/LeafCure.git
+   cd LeafCure
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Configure Environment Variables:**
+   Copy the example file to `.env.local`:
+   ```bash
+   cp .env.example .env.local
+   ```
+   *Open `.env.local` and add your API keys (Gemini, Supabase, Upstash Redis).*
+
+4. **Run the Development Server:**
+   ```bash
+   npm run dev
+   ```
+   Open `http://localhost:5173` in your browser.
+
+5. **Run Tests:**
+   ```bash
+   npm run test
+   ```
+
+---
+
+## 🛡️ Disclaimer
+**FloraGuard AI is an AI-assisted tool and is NOT a substitute for a professional agronomist.** 
+Recommendations regarding chemical treatments and organic remedies should be verified with local agricultural authorities before application.

@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { UploadCloud, Camera, Image as ImageIcon, Sparkles, CheckCircle2, ChevronRight, Zap, Mic, MicOff } from 'lucide-react';
+import React, { useRef, useState, useEffect } from 'react';
+import { UploadCloud, Camera, Image as ImageIcon, Sparkles, CheckCircle2, ChevronRight, Zap, Mic, MicOff, MapPin } from 'lucide-react';
 import { CROP_DISEASE_DATASET, APP_TRANSLATIONS } from '../data/pathologyData';
 
 export default function LeafUploadZone({ 
@@ -14,6 +14,20 @@ export default function LeafUploadZone({
   const [isDragging, setIsDragging] = useState(false);
   const [additionalInfo, setAdditionalInfo] = useState('');
   const [isListening, setIsListening] = useState(false);
+  const [regionSeason, setRegionSeason] = useState('');
+
+  useEffect(() => {
+    const savedRegion = localStorage.getItem('floraguard_region');
+    if (savedRegion) {
+      setRegionSeason(savedRegion);
+    }
+  }, []);
+
+  const handleRegionChange = (e) => {
+    const val = e.target.value;
+    setRegionSeason(val);
+    localStorage.setItem('floraguard_region', val);
+  };
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const hasSpeechSupport = !!SpeechRecognition;
@@ -51,27 +65,44 @@ export default function LeafUploadZone({
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      processFile(e.dataTransfer.files[0]);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      processFiles(Array.from(e.dataTransfer.files));
     }
   };
 
   const handleFileInputChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      processFile(e.target.files[0]);
+    if (e.target.files && e.target.files.length > 0) {
+      processFiles(Array.from(e.target.files));
     }
   };
 
-  const processFile = (file) => {
-    if (!file.type.startsWith('image/')) {
-      alert('Please upload a valid image file (PNG, JPG, WebP).');
+  const processFiles = (files) => {
+    const imageFiles = files.filter(f => f.type.startsWith('image/'));
+    if (imageFiles.length === 0) {
+      alert('Please upload valid image files (PNG, JPG, WebP).');
       return;
     }
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      onImageSelected(event.target.result, additionalInfo);
-    };
-    reader.readAsDataURL(file);
+    
+    const combinedInfo = `${regionSeason ? `Region/Season: ${regionSeason}. ` : ''}${additionalInfo}`;
+    
+    if (imageFiles.length === 1) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        onImageSelected([event.target.result], combinedInfo);
+      };
+      reader.readAsDataURL(imageFiles[0]);
+    } else {
+      const readers = imageFiles.map(file => {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target.result);
+          reader.readAsDataURL(file);
+        });
+      });
+      Promise.all(readers).then(dataUrls => {
+        onImageSelected(dataUrls, combinedInfo);
+      });
+    }
   };
 
   return (
@@ -112,6 +143,7 @@ export default function LeafUploadZone({
           ref={fileInputRef}
           type="file"
           accept="image/*"
+          multiple
           className="hidden"
           onChange={handleFileInputChange}
           disabled={isScanning}
@@ -129,8 +161,28 @@ export default function LeafUploadZone({
           {t.dropzoneSubtitle}
         </p>
 
-        {/* Symptoms Context Area */}
-        <div className="w-full max-w-md mb-6" onClick={(e) => e.stopPropagation()}>
+        {/* Symptoms & Region Context Area */}
+        <div className="w-full max-w-md mb-6 space-y-3" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center gap-2">
+            <MapPin className="w-4 h-4 text-slate-400" />
+            <select 
+              value={regionSeason}
+              onChange={handleRegionChange}
+              className="bg-slate-800/80 text-white text-xs rounded-lg p-2 border border-slate-700 outline-none focus:border-violet-500 w-full"
+            >
+              <option value="">Select Region & Season (Optional)</option>
+              <option value="North India, Summer">North India, Summer</option>
+              <option value="North India, Monsoon">North India, Monsoon</option>
+              <option value="North India, Winter">North India, Winter</option>
+              <option value="South India, Summer">South India, Summer</option>
+              <option value="South India, Monsoon">South India, Monsoon</option>
+              <option value="South India, Winter">South India, Winter</option>
+              <option value="Central India, Monsoon">Central India, Monsoon</option>
+              <option value="East India, Monsoon">East India, Monsoon</option>
+              <option value="West India, Arid/Summer">West India, Arid/Summer</option>
+            </select>
+          </div>
+
           <label className="block text-xs font-semibold text-slate-300 mb-2 text-left">
             Describe symptoms (Optional)
           </label>
@@ -207,7 +259,10 @@ export default function LeafUploadZone({
             return (
               <div
                 key={sample.id}
-                onClick={() => onSampleSelected(sample.id, sample.sampleImage, additionalInfo)}
+                onClick={() => {
+                  const combinedInfo = `${regionSeason ? `Region/Season: ${regionSeason}. ` : ''}${additionalInfo}`;
+                  onSampleSelected(sample.id, sample.sampleImage, combinedInfo);
+                }}
                 className="group relative cursor-pointer rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-violet-500/60 transition-all duration-300 overflow-hidden shadow-lg hover:shadow-violet-500/10 hover:-translate-y-1 flex flex-col justify-between"
               >
                 {/* Visual Thumbnail */}

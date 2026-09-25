@@ -349,7 +349,7 @@ export default function LeafCanvasInspector({
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
-            <span>{t.showHeatmap}</span>
+            <span>Show AI focus areas</span>
           </button>
 
           {/* Labels Toggle */}

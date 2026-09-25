@@ -14,7 +14,7 @@ import PrivacyModal from './components/PrivacyModal';
 import { supabase } from './lib/supabase';
 import { runPathologyInference } from './services/inferenceEngine';
 import { APP_TRANSLATIONS, CROP_DISEASE_DATASET, CLINICAL_CHEMICAL_TREATMENTS } from './data/pathologyData';
-import { Target, UploadCloud, History, Sparkles } from 'lucide-react';
+import { Target, UploadCloud, History, Sparkles, Layers } from 'lucide-react';
 
 const LOCAL_STORAGE_KEY = 'plantcure_ai_diagnoses_v2';
 
@@ -42,6 +42,10 @@ function App() {
   const [session, setSession] = useState(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+
+  const [isBatchMode, setIsBatchMode] = useState(false);
+  const [batchResults, setBatchResults] = useState([]);
+  const [isBatchProcessing, setIsBatchProcessing] = useState(false);
 
   const dashboardRef = useRef(null);
   const t = APP_TRANSLATIONS[lang] || APP_TRANSLATIONS.en;
@@ -139,23 +143,93 @@ function App() {
     }
   };
 
-  const handleImageUpload = async (imageDataUrl, additionalInfo) => {
-    setCurrentImage(imageDataUrl);
-    setActiveTab('diagnosis');
-    startDiagnosisPipeline(imageDataUrl, null, additionalInfo);
+  const handleImageUpload = async (imageDataUrlOrUrls, additionalInfo) => {
+    const urls = Array.isArray(imageDataUrlOrUrls) ? imageDataUrlOrUrls : [imageDataUrlOrUrls];
+    if (urls.length === 1) {
+      setIsBatchMode(false);
+      setBatchResults([]);
+      setCurrentImage(urls[0]);
+      setActiveTab('diagnosis');
+      startDiagnosisPipeline(urls[0], null, additionalInfo);
+    } else if (urls.length > 1) {
+      processBatch(urls, additionalInfo);
+    }
   };
 
   const handleSampleSelected = async (sampleId, sampleImage, additionalInfo) => {
+    setIsBatchMode(false);
+    setBatchResults([]);
     setCurrentImage(sampleImage);
     setActiveTab('diagnosis');
     startDiagnosisPipeline(sampleImage, sampleId, additionalInfo);
   };
 
   const handleCameraCapture = (capturedDataUrl, additionalInfo) => {
+    setIsBatchMode(false);
+    setBatchResults([]);
     setIsCameraOpen(false);
     setCurrentImage(capturedDataUrl);
     setActiveTab('diagnosis');
     startDiagnosisPipeline(capturedDataUrl, null, additionalInfo);
+  };
+
+  const processBatch = async (urls, additionalInfo) => {
+    setIsBatchMode(true);
+    setBatchResults([]);
+    setIsBatchProcessing(true);
+    setActiveTab('diagnosis');
+    dashboardRef.current?.scrollIntoView({ behavior: 'smooth' });
+
+    const results = [];
+    for (let i = 0; i < urls.length; i++) {
+       setCurrentImage(urls[i]);
+       setIsScanning(true);
+       setScanProgress(10);
+       setTelemetryLogs([]);
+       
+       try {
+         const { localResult, aiPromise } = await runPathologyInference(
+           urls[i],
+           null,
+           ({ step, text, progress }) => {
+             setScanProgress(progress);
+             setTelemetryLogs(prev => [...prev, { step, text }]);
+           },
+           additionalInfo
+         );
+         
+         let finalResult = localResult;
+         if (aiPromise) {
+           setIsAiAnalyzing(true);
+           try {
+             const aiResult = await aiPromise;
+             if (aiResult) finalResult = aiResult;
+           } catch (err) {
+             console.error(err);
+           }
+           setIsAiAnalyzing(false);
+         }
+         
+         saveToHistory(finalResult);
+         results.push(finalResult);
+         setBatchResults([...results]);
+         setActiveDiagnosis(finalResult);
+         
+         if (i < urls.length - 1) {
+           await new Promise(r => setTimeout(r, 1000));
+         }
+       } catch (error) {
+         console.error('Batch inference failure for leaf ' + i, error);
+       } finally {
+         setIsScanning(false);
+       }
+    }
+    
+    setIsBatchProcessing(false);
+    if (results.length > 0) {
+      setActiveDiagnosis(results[0]);
+      setCurrentImage(results[0].imageUrl || results[0].sampleImage);
+    }
   };
 
   // Core Diagnosis Pipeline Orchestrator
@@ -232,6 +306,8 @@ function App() {
 
   // Re-inspect a past scan from history
   const handleInspectPastScan = (record) => {
+    setIsBatchMode(false);
+    setBatchResults([]);
     setActiveDiagnosis(record);
     setCurrentImage(record.imageUrl || record.sampleImage);
     setActiveTab('diagnosis');
@@ -370,7 +446,47 @@ function App() {
 
         {/* Module 2: Main Diagnosis Card & Visual Leaf Canvas Inspector */}
         <div ref={dashboardRef} id="diagnosis-portal" className="space-y-8">
-          {isAiAnalyzing && (
+          
+          {/* Batch Mode Summary Panel */}
+          {isBatchMode && (batchResults.length > 0 || isBatchProcessing) && (
+            <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 shadow-xl text-center">
+              <h3 className="text-xl font-bold text-white mb-2 flex items-center justify-center gap-2">
+                <Layers className="w-5 h-5 text-violet-400" />
+                Batch Analysis Summary
+              </h3>
+              <p className="text-slate-300 text-sm">
+                Processed {batchResults.length} leaf images.
+                {batchResults.length > 0 && ` ${batchResults.filter(r => r.severity !== 'none').length} of ${batchResults.length} leaves show signs of disease.`}
+              </p>
+              
+              <div className="mt-4 flex gap-2 justify-center flex-wrap">
+                {batchResults.map((res, idx) => (
+                  <button 
+                    key={idx}
+                    onClick={() => {
+                      setActiveDiagnosis(res);
+                      setCurrentImage(res.imageUrl || res.sampleImage);
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                      activeDiagnosis?.scanId === res.scanId 
+                        ? 'bg-violet-600 text-white border-violet-500 shadow-md' 
+                        : 'bg-slate-800 text-slate-300 border-slate-600 hover:bg-slate-700'
+                    }`}
+                  >
+                    Leaf {idx + 1}: {res.diseaseName[lang] || res.diseaseName.en}
+                  </button>
+                ))}
+              </div>
+
+              {isBatchProcessing && (
+                <div className="mt-4 text-violet-400 text-sm flex justify-center items-center gap-2">
+                  <Sparkles className="w-4 h-4 animate-spin" /> Processing {batchResults.length + 1}...
+                </div>
+              )}
+            </div>
+          )}
+
+          {isAiAnalyzing && !isBatchMode && (
             <div className="bg-violet-900/40 border border-violet-500/50 p-4 rounded-2xl flex items-center justify-center gap-3 shadow-lg animate-pulse">
               <Sparkles className="w-5 h-5 text-violet-400" />
               <span className="text-violet-200 text-sm font-medium">

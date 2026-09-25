@@ -244,6 +244,33 @@ export default function DiagnosticDashboard({
               </div>
             </div>
 
+            {/* Healthy Plant Extras: Species Guess & Care Tips */}
+            {activeResult.plant_species_guess && (
+              <div className="mt-4 rounded-xl bg-emerald-950/30 border border-emerald-900/50 p-4 flex flex-col gap-2">
+                <h3 className="text-emerald-400 font-bold text-sm flex items-center gap-2">
+                  <Sparkles className="w-4 h-4" />
+                  Plant Identified
+                </h3>
+                <p className="text-slate-200 text-sm font-medium">
+                  {activeResult.plant_species_guess[lang] || activeResult.plant_species_guess.en || activeResult.plant_species_guess}
+                </p>
+                
+                {activeResult.care_tips && (
+                  <div className="mt-2 pt-2 border-t border-emerald-900/30">
+                    <h4 className="text-emerald-400/80 font-semibold text-xs uppercase tracking-wider mb-2">General Care Tips</h4>
+                    <ul className="list-disc list-inside text-sm text-slate-300 space-y-1">
+                      {(Array.isArray(activeResult.care_tips) 
+                        ? activeResult.care_tips 
+                        : (activeResult.care_tips[lang] || activeResult.care_tips.en || [])
+                      ).map((tip, i) => (
+                        <li key={i}>{tip}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Why this diagnosis panel */}
             {symptomsArray && symptomsArray.length > 0 && (
               <div className="mt-4 rounded-xl border border-slate-800 bg-slate-900/50 overflow-hidden">

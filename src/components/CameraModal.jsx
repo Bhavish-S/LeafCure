@@ -8,6 +8,9 @@ export default function CameraModal({ isOpen, onClose, onCapture, lang }) {
   const streamRef = useRef(null);
   const [cameraError, setCameraError] = useState(null);
   const [isInitializing, setIsInitializing] = useState(false);
+  const [framingHint, setFramingHint] = useState('');
+  const [hintColor, setHintColor] = useState('text-slate-300');
+  const animationRef = useRef(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -19,6 +22,77 @@ export default function CameraModal({ isOpen, onClose, onCapture, lang }) {
       stopCamera();
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    let timeoutId;
+    if (isOpen && videoRef.current && !isInitializing && !cameraError) {
+      const analyzeFrame = () => {
+        if (!videoRef.current || videoRef.current.readyState < 2) {
+          animationRef.current = requestAnimationFrame(analyzeFrame);
+          return;
+        }
+        
+        const video = videoRef.current;
+        const canvas = document.createElement('canvas');
+        canvas.width = 64; // low res for fast analysis
+        canvas.height = 64;
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        
+        let totalBrightness = 0;
+        let totalGreen = 0;
+        
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          
+          const brightness = (0.299 * r + 0.587 * g + 0.114 * b);
+          totalBrightness += brightness;
+          
+          // Simple green dominance check
+          if (g > r * 1.1 && g > b * 1.1) {
+            totalGreen++;
+          }
+        }
+        
+        const pixels = canvas.width * canvas.height;
+        const avgBrightness = totalBrightness / pixels;
+        const greenRatio = totalGreen / pixels;
+        
+        if (avgBrightness < 40) {
+          setFramingHint('Too dark. Move to a brighter area.');
+          setHintColor('text-red-400');
+        } else if (avgBrightness > 230) {
+          setFramingHint('Too bright or glared.');
+          setHintColor('text-amber-400');
+        } else if (greenRatio < 0.05) {
+          setFramingHint('No leaf detected. Frame the leaf.');
+          setHintColor('text-amber-400');
+        } else if (greenRatio < 0.15) {
+          setFramingHint('Move closer to the leaf.');
+          setHintColor('text-amber-400');
+        } else {
+          setFramingHint('Good framing. Ready to capture.');
+          setHintColor('text-emerald-400');
+        }
+        
+        timeoutId = setTimeout(() => {
+          animationRef.current = requestAnimationFrame(analyzeFrame);
+        }, 400); // ~2.5 fps
+      };
+      
+      animationRef.current = requestAnimationFrame(analyzeFrame);
+    }
+    
+    return () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [isOpen, isInitializing, cameraError]);
 
   const startCamera = async () => {
     setCameraError(null);
@@ -118,18 +192,17 @@ export default function CameraModal({ isOpen, onClose, onCapture, lang }) {
               />
 
               {/* Viewfinder Targeting Overlays */}
-              <div className="absolute inset-8 pointer-events-none border border-violet-500/40 rounded-xl">
-                {/* Corner reticles */}
-                <div className="absolute -top-1 -left-1 w-6 h-6 border-t-2 border-l-2 border-violet-400"></div>
-                <div className="absolute -top-1 -right-1 w-6 h-6 border-t-2 border-r-2 border-violet-400"></div>
-                <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-2 border-l-2 border-violet-400"></div>
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-2 border-r-2 border-violet-400"></div>
-                
+              <div className={`absolute inset-8 pointer-events-none border-2 rounded-[30%] sm:rounded-full flex items-center justify-center transition-colors duration-500 ${hintColor.replace('text-', 'border-').replace('300', '500/50').replace('400', '500/80')}`}>
                 {/* Center target mark */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-30">
-                  <div className="w-12 h-12 border border-violet-400 rounded-full"></div>
-                </div>
+                <div className={`w-2 h-2 rounded-full opacity-50 ${hintColor.replace('text-', 'bg-')}`}></div>
               </div>
+
+              {/* Live Hint Badge */}
+              {framingHint && (
+                <div className={`absolute top-4 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-sm border border-slate-700/50 text-xs font-semibold ${hintColor} shadow-lg transition-colors duration-300`}>
+                  {framingHint}
+                </div>
+              )}
 
               {isInitializing && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/60 text-slate-300 text-sm">

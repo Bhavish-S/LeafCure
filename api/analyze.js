@@ -63,7 +63,7 @@ export default async function handler(req, res) {
   }
 
   const prompt = `Act as a plant pathologist and analyze this image. 
-${additionalInfo ? `The user also verbally described these symptoms: "${additionalInfo}". Take this into account.` : ''}
+${additionalInfo ? `The user provided this context (symptoms, region, season, etc.): "${additionalInfo}". If a region and season are provided, MUST factor that into likely_cause and treatment_organic recommendations (e.g. accounting for local weather, endemic pests, or locally available organic materials).` : ''}
 Return ONLY strict JSON in the exact following structure. 
 For any text intended for the user, provide an object with 'en' and 'hi' (Hindi) keys (e.g. { "en": "English text", "hi": "हिंदी पाठ" }).
 Strict JSON schema:
@@ -99,8 +99,11 @@ Strict JSON schema:
       "action": { "en": "...", "hi": "..." }
     }
   ],
-  "is_healthy": false
-}`;
+  "is_healthy": false,
+  "plant_species_guess": { "en": "...", "hi": "..." },
+  "care_tips": { "en": ["..."], "hi": ["..."] }
+}
+Note: If is_healthy is true, provide a good plant_species_guess and 2-3 general care_tips for that plant.`;
 
   try {
     const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;

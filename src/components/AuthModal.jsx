@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { X, Mail, Chrome } from 'lucide-react';
+import { X, Mail, Globe } from 'lucide-react';
 import { APP_TRANSLATIONS } from '../data/pathologyData';
 
 export default function AuthModal({ isOpen, onClose, lang }) {
@@ -56,7 +56,7 @@ export default function AuthModal({ isOpen, onClose, lang }) {
             onClick={handleGoogleLogin}
             className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white text-slate-900 hover:bg-slate-100 font-semibold rounded-xl transition-colors"
           >
-            <Chrome className="w-5 h-5" />
+            <Globe className="w-5 h-5" />
             {t.googleLogin}
           </button>
           

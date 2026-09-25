@@ -11,6 +11,7 @@
     "auto-sync": "nodemon --watch src --watch index.html --ext js,jsx,css,html --exec \"git add . && git commit -m 'Auto-sync' && git push origin main || true\""
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.117.1",
     "canvas-confetti": "^1.9.4",
     "lucide-react": "^1.16.0",
     "react": "^19.2.8",

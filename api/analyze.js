@@ -1,3 +1,6 @@
+import { Redis } from '@upstash/redis';
+import { Ratelimit } from '@upstash/ratelimit';
+
 export const config = {
   api: {
     bodyParser: {
@@ -7,14 +10,56 @@ export const config = {
 };
 
 export default async function handler(req, res) {
+  // CORS Configuration
+  const allowedOrigin = process.env.ALLOWED_ORIGIN || '*';
+  res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Handle preflight OPTIONS request
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
+  }
+
+  const ip = req.headers['x-forwarded-for'] || req.connection?.remoteAddress || '127.0.0.1';
+  console.log(`[API_ANALYZE] POST request initiated from IP: ${ip} at ${new Date().toISOString()}`);
+
+  // Rate Limiting (10 requests per hour)
+  if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+    try {
+      const redis = new Redis({
+        url: process.env.UPSTASH_REDIS_REST_URL,
+        token: process.env.UPSTASH_REDIS_REST_TOKEN,
+      });
+      const ratelimit = new Ratelimit({
+        redis: redis,
+        limiter: Ratelimit.slidingWindow(10, '1 h'),
+      });
+      
+      const { success } = await ratelimit.limit(`ratelimit_analyze_${ip}`);
+      if (!success) {
+        return res.status(429).json({ error: 'Too many requests. You have reached the maximum of 10 requests per hour. Please try again later.' });
+      }
+    } catch (err) {
+      console.error('Rate limiting error:', err);
+      // Fail open if Redis fails, or handle accordingly
+    }
   }
 
   const { imageBase64, mimeType } = req.body;
   
   if (!imageBase64 || !mimeType) {
     return res.status(400).json({ error: 'Missing imageBase64 or mimeType' });
+  }
+
+  // Input Validation: Restrict MIME types
+  const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
+  if (!allowedMimeTypes.includes(mimeType)) {
+    return res.status(400).json({ error: 'Invalid mime type. Only image/jpeg, image/png, and image/webp are allowed.' });
   }
 
   const prompt = `Act as a plant pathologist and analyze this image. Return ONLY strict JSON in the exact following structure. 

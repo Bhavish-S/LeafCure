@@ -7,6 +7,13 @@ Currently, two official plugins are available:
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
+## Setup AI Engine
+
+This project uses Gemini 2.0 Flash for deep plant pathology analysis.
+1. Get an API key from [Google AI Studio](https://aistudio.google.com/apikey).
+2. Create a `.env.local` file from `.env.example` and add your key: `GEMINI_API_KEY=your_key`
+3. When deploying to Vercel, add `GEMINI_API_KEY` to the Environment Variables settings.
+
 ## React Compiler
 
 The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).

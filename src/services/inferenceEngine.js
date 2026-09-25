@@ -262,7 +262,71 @@ export async function runPathologyInference(imageSource, predefinedId = null, on
     };
   }
 
-  return finalResult;
+  const deepAnalysisPromise = (async () => {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
+      
+      let mimeType = 'image/jpeg';
+      let base64Data = imageSource;
+      
+      if (imageSource.startsWith('data:')) {
+        const match = imageSource.match(/^data:(image\/\w+);base64,/);
+        if (match) {
+          mimeType = match[1];
+        }
+      } else {
+        const img = new Image();
+        img.src = imageSource;
+        await new Promise((resolve, reject) => {
+           img.onload = resolve;
+           img.onerror = reject;
+        });
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        base64Data = canvas.toDataURL('image/jpeg', 0.8);
+        mimeType = 'image/jpeg';
+      }
+      
+      const res = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageBase64: base64Data, mimeType }),
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (!res.ok) throw new Error('API returned ' + res.status);
+      const data = await res.json();
+      
+      return {
+        ...finalResult,
+        cropName: data.plant_type || finalResult.cropName,
+        diseaseName: data.disease_name || finalResult.diseaseName,
+        scientificName: data.scientific_name || finalResult.scientificName,
+        pathogenType: data.likely_cause || finalResult.pathogenType,
+        severity: data.severity || finalResult.severity,
+        confidence: data.confidence_percent || finalResult.confidence,
+        affectedAreaPct: data.affected_area_pct || finalResult.affectedAreaPct,
+        isHealthy: data.is_healthy ?? finalResult.isHealthy,
+        prognosis: data.prognosis || finalResult.prognosis,
+        symptoms: data.symptoms_observed || finalResult.symptoms,
+        chemicalTreatments: data.treatment_chemical || finalResult.chemicalTreatments,
+        organicRemedies: data.treatment_organic || finalResult.organicRemedies,
+        preventiveAdvisory: data.prevention_tips || finalResult.preventiveAdvisory
+      };
+    } catch (e) {
+      console.warn('Gemini AI deep analysis failed or timed out:', e);
+      return null;
+    }
+  })();
+
+  return { localResult: finalResult, aiPromise: deepAnalysisPromise };
 }
 
 function sleep(ms) {

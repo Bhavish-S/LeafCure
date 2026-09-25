@@ -780,6 +780,7 @@ export const CROP_DISEASE_DATASET = [
 
 export const APP_TRANSLATIONS = {
   en: {
+    aiAnalyzing: 'AI Deep Analysis in progress...',
     appTitle: 'PlantCure AI',
     appSubtitle: 'Botanical Analysis & Diagnostic Interface',
     engineBadge: 'Inference Engine Active',
@@ -836,6 +837,7 @@ export const APP_TRANSLATIONS = {
     healthyFungicideNotice: 'Status: Foliage is completely healthy. Chemical fungicides are NOT recommended or required. Displaying preventive micronutrient and foliar maintenance guidelines.'
   },
   hi: {
+    aiAnalyzing: 'एआई डीप एनालिसिस चल रहा है...',
     appTitle: 'एग्रीक्योर एआई',
     appSubtitle: 'वेब-आधारित फसल रोग पहचान एवं कृषि सलाह पोर्टल',
     engineBadge: 'वेब इंजन v2.4 सक्रिय',

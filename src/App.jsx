@@ -10,7 +10,7 @@ import CameraModal from './components/CameraModal';
 import DiagnosticReportPrint from './components/DiagnosticReportPrint';
 import { runPathologyInference } from './services/inferenceEngine';
 import { APP_TRANSLATIONS, CROP_DISEASE_DATASET, CLINICAL_CHEMICAL_TREATMENTS } from './data/pathologyData';
-import { Target, UploadCloud, History } from 'lucide-react';
+import { Target, UploadCloud, History, Sparkles } from 'lucide-react';
 
 const LOCAL_STORAGE_KEY = 'plantcure_ai_diagnoses_v2';
 
@@ -21,6 +21,7 @@ function App() {
   const [isScanning, setIsScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState(0);
   const [telemetryLogs, setTelemetryLogs] = useState([]);
+  const [isAiAnalyzing, setIsAiAnalyzing] = useState(false);
   const [currentImage, setCurrentImage] = useState(() => CROP_DISEASE_DATASET[0]?.sampleImage || null);
   const [activeDiagnosis, setActiveDiagnosis] = useState(() => {
     const initial = CROP_DISEASE_DATASET[0];
@@ -93,7 +94,7 @@ function App() {
     setTelemetryLogs([]);
 
     try {
-      const result = await runPathologyInference(
+      const { localResult, aiPromise } = await runPathologyInference(
         imageSrc,
         predefinedId,
         ({ step, text, progress }) => {
@@ -102,11 +103,11 @@ function App() {
         }
       );
 
-      setActiveDiagnosis(result);
-      saveToHistory(result);
+      setActiveDiagnosis(localResult);
+      saveToHistory(localResult);
 
       // Trigger celebration confetti if crop is completely healthy!
-      if (result.severity === 'none') {
+      if (localResult.severity === 'none') {
         confetti({
           particleCount: 80,
           spread: 70,
@@ -119,6 +120,20 @@ function App() {
       setTimeout(() => {
         dashboardRef.current?.scrollIntoView({ behavior: 'smooth' });
       }, 300);
+
+      if (aiPromise) {
+        setIsAiAnalyzing(true);
+        aiPromise.then((aiResult) => {
+          if (aiResult) {
+            setActiveDiagnosis(aiResult);
+            saveToHistory(aiResult);
+          }
+        }).catch(err => {
+          console.error(err);
+        }).finally(() => {
+          setIsAiAnalyzing(false);
+        });
+      }
 
     } catch (error) {
       console.error('Inference pipeline failure:', error);
@@ -280,6 +295,14 @@ function App() {
 
         {/* Module 2: Main Diagnosis Card & Visual Leaf Canvas Inspector */}
         <div ref={dashboardRef} id="diagnosis-portal" className="space-y-8">
+          {isAiAnalyzing && (
+            <div className="bg-violet-900/40 border border-violet-500/50 p-4 rounded-2xl flex items-center justify-center gap-3 shadow-lg animate-pulse">
+              <Sparkles className="w-5 h-5 text-violet-400" />
+              <span className="text-violet-200 text-sm font-medium">
+                {t.aiAnalyzing}
+              </span>
+            </div>
+          )}
           <DiagnosticDashboard
             result={activeDiagnosis || CROP_DISEASE_DATASET[0]}
             lang={lang}

@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "auto-sync": "nodemon --watch src --watch index.html --ext js,jsx,css,html --exec \"git add . && git commit -m 'Auto-sync' && git push origin main || true\""
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",
@@ -21,6 +22,7 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
+    "nodemon": "^3.1.14",
     "oxlint": "^1.81.0",
     "tailwindcss": "^4.1.0",
     "vite": "^8.3.0"

@@ -21,7 +21,7 @@ export default function Navbar({ lang, setLang, onNewScan, onScrollToHistory, hi
           <div>
             <div className="flex items-center gap-2">
               <span className="font-extrabold text-xl tracking-tight text-white font-sans">
-                FloraGuard <span className="text-violet-400">AI</span>
+                PlantCure <span className="text-violet-400">AI</span>
               </span>
             </div>
             <p className="text-xs text-slate-400 hidden sm:block">

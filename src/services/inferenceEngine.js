@@ -6,7 +6,7 @@ import { detectLesionsFromImage, generateFallbackLesions } from '../utils/lesion
  * Performs client-side pixel analysis (aspect ratio, RGB balance, necrotic chlorosis clustering)
  * and returns matched pathology data with dynamically generated or predefined bounding boxes.
  */
-export async function runPathologyInference(imageSource, predefinedId = null, onLogUpdate = () => {}, onAIUpdate = null) {
+export async function runPathologyInference(imageSource, predefinedId = null, onLogUpdate = () => {}) {
   // If user clicked one of the quick samples, find direct match
   const matchedSample = predefinedId 
     ? CROP_DISEASE_DATASET.find(d => d.id === predefinedId)
@@ -262,18 +262,7 @@ export async function runPathologyInference(imageSource, predefinedId = null, on
     };
   }
 
-  const baseResult = { ...finalResult, isAnalyzingAI: true, aiAnalysisComplete: false };
-  
-  if (onAIUpdate) {
-    performAIDeepAnalysis(baseResult, imageSource).then(aiResult => {
-      onAIUpdate(aiResult);
-    }).catch(err => {
-      console.error(err);
-      onAIUpdate({ ...baseResult, isAnalyzingAI: false, aiAnalysisComplete: false });
-    });
-  }
-
-  return baseResult;
+  return finalResult;
 }
 
 function sleep(ms) {
@@ -406,67 +395,4 @@ function analyzeImagePixels(imageSource) {
       process();
     }
   });
-}
-
-async function performAIDeepAnalysis(baseResult, imageSource) {
-  try {
-     const mimeMatch = imageSource.match(/^data:(image\/\w+);base64,/);
-     const mimeType = mimeMatch ? mimeMatch[1] : 'image/jpeg';
-     const res = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-           imageBase64: imageSource,
-           mimeType
-        })
-     });
-     if (!res.ok) throw new Error('API failed');
-     const geminiData = await res.json();
-     
-     return {
-        ...baseResult,
-        isAnalyzingAI: false,
-        aiAnalysisComplete: true,
-        cropName: { en: geminiData.plant_type, hi: geminiData.plant_type },
-        diseaseName: { en: geminiData.disease_name, hi: geminiData.disease_name },
-        scientificName: geminiData.scientific_name,
-        severity: geminiData.severity,
-        confidence: geminiData.confidence_percent,
-        affectedAreaPct: geminiData.affected_area_pct,
-        isHealthy: geminiData.is_healthy,
-        pathogenType: { en: geminiData.likely_cause, hi: geminiData.likely_cause },
-        prognosis: { 
-           en: APP_TRANSLATIONS.en.aiAnalysisCompletePrognosis, 
-           hi: APP_TRANSLATIONS.hi.aiAnalysisCompletePrognosis 
-        },
-        symptoms: {
-           en: geminiData.symptoms_observed,
-           hi: geminiData.symptoms_observed
-        },
-        organicRemedies: (geminiData.treatment_organic || []).map(t => ({
-           title: { en: t.title, hi: t.title },
-           dosage: { en: t.dosage, hi: t.dosage },
-           schedule: { en: t.schedule, hi: t.schedule },
-           mechanism: { en: t.mechanism, hi: t.mechanism }
-        })),
-        chemicalTreatments: (geminiData.treatment_chemical || []).map(t => ({
-           title: { en: t.title, hi: t.title },
-           dosage: { en: t.dosage, hi: t.dosage },
-           schedule: { en: t.schedule, hi: t.schedule },
-           mechanism: { en: t.mechanism, hi: t.mechanism }
-        })),
-        chemicalInterventions: (geminiData.treatment_chemical || []).map(t => ({
-           title: { en: t.title, hi: t.title },
-           dosage: { en: t.dosage, hi: t.dosage },
-           schedule: { en: t.schedule, hi: t.schedule },
-           mechanism: { en: t.mechanism, hi: t.mechanism }
-        })),
-        preventiveAdvisory: (geminiData.prevention_tips || []).map(tip => ({
-           category: { en: APP_TRANSLATIONS.en.preventionTip, hi: APP_TRANSLATIONS.hi.preventionTip },
-           action: { en: tip, hi: tip }
-        }))
-     };
-  } catch (err) {
-     return { ...baseResult, isAnalyzingAI: false, aiAnalysisComplete: false };
-  }
 }

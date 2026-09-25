@@ -13,7 +13,7 @@ export default function DiagnosticReportPrint({ result, lang }) {
       <div className="border-b-2 border-violet-700 pb-4 mb-6 flex justify-between items-start">
         <div>
           <h1 className="text-2xl font-black text-violet-900 uppercase tracking-tight">
-            FloraGuard AI – Crop Pathology Diagnostic Certificate
+            PlantCure AI – Crop Pathology Diagnostic Certificate
           </h1>
           <p className="text-xs text-slate-600 font-medium mt-1">
             Automated Agricultural Vision & Field Pathology Advisory Protocol
@@ -145,7 +145,7 @@ export default function DiagnosticReportPrint({ result, lang }) {
       {/* Footer & Signature Line */}
       <div className="border-t-2 border-slate-300 pt-4 mt-8 flex justify-between items-end text-[10px] text-slate-500">
         <div>
-          <p>Verified through FloraGuard AI Client Vision Pathology Engine v2.4.</p>
+          <p>Verified through PlantCure AI Client Vision Pathology Engine v2.4.</p>
           <p className="mt-1">{t.disclaimer}</p>
         </div>
         <div className="text-center w-48 border-t border-slate-400 pt-1">

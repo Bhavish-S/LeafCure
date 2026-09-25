@@ -12,7 +12,7 @@ import { runPathologyInference } from './services/inferenceEngine';
 import { APP_TRANSLATIONS, CROP_DISEASE_DATASET, CLINICAL_CHEMICAL_TREATMENTS } from './data/pathologyData';
 import { Target, UploadCloud, History } from 'lucide-react';
 
-const LOCAL_STORAGE_KEY = 'floraguard_ai_diagnoses_v2';
+const LOCAL_STORAGE_KEY = 'plantcure_ai_diagnoses_v2';
 
 function App() {
   const [lang, setLang] = useState('en'); // 'en' | 'hi'
@@ -99,19 +99,6 @@ function App() {
         ({ step, text, progress }) => {
           setScanProgress(progress);
           setTelemetryLogs(prev => [...prev, { step, text }]);
-        },
-        (aiResult) => {
-          setActiveDiagnosis(aiResult);
-          saveToHistory(aiResult);
-          
-          if (aiResult.severity === 'none') {
-            confetti({
-              particleCount: 80,
-              spread: 70,
-              origin: { y: 0.6 },
-              colors: ['#10b981', '#34d399', '#4ade80', '#86efac']
-            });
-          }
         }
       );
 
@@ -338,7 +325,7 @@ function App() {
       <footer className="w-full border-t border-slate-800/80 bg-slate-950/50 backdrop-blur-md py-8 text-center text-xs text-slate-400 no-print">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-slate-400">
-            © {new Date().getFullYear()} FloraGuard AI – Precision Agronomy & Plant Pathology. All rights reserved.
+            © {new Date().getFullYear()} PlantCure AI – Precision Agronomy & Plant Pathology. All rights reserved.
           </p>
           <div className="flex items-center gap-4 text-slate-400">
             <span>Client-Side Neural Inference Engine</span>

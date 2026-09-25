@@ -163,27 +163,13 @@ export default function DiagnosticDashboard({
             </div>
 
             <div className="text-center mt-3">
-              {activeResult.isAnalyzingAI ? (
-                <div>
-                  <span className="text-xs font-semibold text-amber-400 flex items-center justify-center gap-1">
-                    <Sparkles className="w-4 h-4 animate-spin" />
-                    <span>{t.aiAnalysisProgress}</span>
-                  </span>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
-                    {t.queryingGemini}
-                  </p>
-                </div>
-              ) : (
-                <div>
-                  <span className="text-xs font-semibold text-violet-400 flex items-center justify-center gap-1">
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>{activeResult.aiAnalysisComplete ? t.geminiVerified : t.heuristicMatch}</span>
-                  </span>
-                  <p className="text-[11px] text-slate-400 mt-0.5">
-                    {activeResult.aiAnalysisComplete ? t.geminiVerifiedDesc : t.heuristicMatchDesc}
-                  </p>
-                </div>
-              )}
+              <span className="text-xs font-semibold text-violet-400 flex items-center justify-center gap-1">
+                <CheckCircle2 className="w-4 h-4" />
+                <span>Deep Pathology Heuristic Match</span>
+              </span>
+              <p className="text-[11px] text-slate-400 mt-0.5">
+                Multi-spectral leaf geometry calibrated
+              </p>
             </div>
 
           </div>

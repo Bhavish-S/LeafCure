@@ -833,7 +833,15 @@ export const APP_TRANSLATIONS = {
     none: 'Healthy / None',
     foliageHealthyStatus: 'Status: Foliage Healthy (No Active Pathogens Detected)',
     healthyCropVerdict: 'Healthy Crop (Zea mays / Solanum)',
-    healthyFungicideNotice: 'Status: Foliage is completely healthy. Chemical fungicides are NOT recommended or required. Displaying preventive micronutrient and foliar maintenance guidelines.'
+    healthyFungicideNotice: 'Status: Foliage is completely healthy. Chemical fungicides are NOT recommended or required. Displaying preventive micronutrient and foliar maintenance guidelines.',
+    aiAnalysisProgress: 'AI Deep Analysis in progress...',
+    queryingGemini: 'Querying Gemini 2.0 Flash',
+    geminiVerified: 'Gemini AI Deep Pathology Match',
+    geminiVerifiedDesc: 'Verified by Gemini Vision Model',
+    heuristicMatch: 'Deep Pathology Heuristic Match',
+    heuristicMatchDesc: 'Multi-spectral leaf geometry calibrated',
+    aiAnalysisCompletePrognosis: 'AI Deep Analysis completed. Follow the recommended treatment plan.',
+    preventionTip: 'Prevention Tip'
   },
   hi: {
     appTitle: 'एग्रीक्योर एआई',
@@ -889,6 +897,14 @@ export const APP_TRANSLATIONS = {
     none: 'स्वस्थ / कोई रोग नहीं',
     foliageHealthyStatus: 'स्थिति: पत्ती पूर्णतः स्वस्थ (कोई सक्रिय रोगज़नक़ नहीं मिला)',
     healthyCropVerdict: 'स्वस्थ फसल (Zea mays / Solanum)',
-    healthyFungicideNotice: 'स्थिति: पत्ती पूर्णतः स्वस्थ है। रासायनिक कवकनाशी की आवश्यकता नहीं है। निवारक सूक्ष्म पोषक तत्व एवं पर्ण रखरखाव सलाह प्रदर्शित की जा रही है।'
+    healthyFungicideNotice: 'स्थिति: पत्ती पूर्णतः स्वस्थ है। रासायनिक कवकनाशी की आवश्यकता नहीं है। निवारक सूक्ष्म पोषक तत्व एवं पर्ण रखरखाव सलाह प्रदर्शित की जा रही है।',
+    aiAnalysisProgress: 'एआई गहन विश्लेषण प्रगति पर...',
+    queryingGemini: 'जेमिनी 2.0 फ़्लैश से पूछताछ',
+    geminiVerified: 'जेमिनी एआई गहन रोग विज्ञान मिलान',
+    geminiVerifiedDesc: 'जेमिनी विज़न मॉडल द्वारा सत्यापित',
+    heuristicMatch: 'गहन रोग विज्ञान अनुमानित मिलान',
+    heuristicMatchDesc: 'मल्टी-स्पेक्ट्रल पत्ती ज्यामिति कैलिब्रेट की गई',
+    aiAnalysisCompletePrognosis: 'एआई विश्लेषण पूर्ण हुआ। अनुशंसित उपचार योजना का पालन करें।',
+    preventionTip: 'निवारण टिप'
   }
 };

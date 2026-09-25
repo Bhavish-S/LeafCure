@@ -99,6 +99,19 @@ function App() {
         ({ step, text, progress }) => {
           setScanProgress(progress);
           setTelemetryLogs(prev => [...prev, { step, text }]);
+        },
+        (aiResult) => {
+          setActiveDiagnosis(aiResult);
+          saveToHistory(aiResult);
+          
+          if (aiResult.severity === 'none') {
+            confetti({
+              particleCount: 80,
+              spread: 70,
+              origin: { y: 0.6 },
+              colors: ['#10b981', '#34d399', '#4ade80', '#86efac']
+            });
+          }
         }
       );
 

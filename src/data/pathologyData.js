@@ -851,7 +851,12 @@ export const APP_TRANSLATIONS = {
     addPlant: 'Add New Plant',
     plantName: 'Plant Name / Identifier',
     plantSpecies: 'Species (Optional)',
-    createPlant: 'Create Profile'
+    createPlant: 'Create Profile',
+    whyDiagnosis: 'Why this diagnosis?',
+    symptomsMatched: 'Symptoms matched by AI:',
+    disclaimerText: 'AI-assisted diagnosis — not a substitute for a professional agronomist.',
+    feedbackQuestion: 'Was this diagnosis accurate?',
+    feedbackThanks: 'Thanks for your feedback!'
   },
   hi: {
     aiAnalyzing: 'एआई डीप एनालिसिस चल रहा है...',
@@ -925,6 +930,11 @@ export const APP_TRANSLATIONS = {
     addPlant: 'नया पौधा जोड़ें',
     plantName: 'पौधे का नाम / पहचानकर्ता',
     plantSpecies: 'प्रजाति (वैकल्पिक)',
-    createPlant: 'प्रोफ़ाइल बनाएं'
+    createPlant: 'प्रोफ़ाइल बनाएं',
+    whyDiagnosis: 'यह निदान क्यों?',
+    symptomsMatched: 'एआई द्वारा पहचाने गए लक्षण:',
+    disclaimerText: 'एआई-सहायक निदान — पेशेवर कृषि विज्ञानी का विकल्प नहीं है।',
+    feedbackQuestion: 'क्या यह निदान सटीक था?',
+    feedbackThanks: 'आपकी प्रतिक्रिया के लिए धन्यवाद!'
   }
 };

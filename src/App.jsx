@@ -73,7 +73,8 @@ function App() {
             ...scan.diagnosis,
             imageUrl: scan.image_url,
             scanId: scan.id,
-            scannedAt: scan.scanned_at
+            scannedAt: scan.scanned_at,
+            plantId: scan.plant_id
           }));
           setHistory(formattedHistory);
         }
@@ -113,6 +114,7 @@ function App() {
         
         if (!error && data) {
           newRecord.scanId = data[0].id;
+          newRecord.plantId = null;
           setHistory(prev => [newRecord, ...prev]);
         }
       }
@@ -124,6 +126,14 @@ function App() {
       } catch (e) {
         console.warn('Failed to persist history to localStorage', e);
       }
+    }
+  };
+
+  const handleLinkPlant = async (scanId, plantId) => {
+    if (!session) return;
+    const { error } = await supabase.from('scans').update({ plant_id: plantId }).eq('id', scanId);
+    if (!error) {
+      setHistory(prev => prev.map(h => h.scanId === scanId ? { ...h, plantId } : h));
     }
   };
 
@@ -398,6 +408,7 @@ function App() {
             onClearHistory={handleClearAllHistory}
             lang={lang}
             isCloudSynced={!!session}
+            onLinkPlant={handleLinkPlant}
           />
         </div>
 

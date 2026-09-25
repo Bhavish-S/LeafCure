@@ -10,9 +10,15 @@ import {
   Share2, 
   FileText,
   Calendar,
-  Sparkles
+  Sparkles,
+  ChevronDown,
+  ChevronUp,
+  ThumbsUp,
+  ThumbsDown,
+  Info
 } from 'lucide-react';
 import LeafCanvasInspector from './LeafCanvasInspector';
+import { supabase } from '../lib/supabase';
 import { APP_TRANSLATIONS, CROP_DISEASE_DATASET } from '../data/pathologyData';
 
 export default function DiagnosticDashboard({ 
@@ -22,6 +28,19 @@ export default function DiagnosticDashboard({
 }) {
   const t = APP_TRANSLATIONS[lang] || APP_TRANSLATIONS.en;
   const activeResult = result || CROP_DISEASE_DATASET[0];
+
+  const [isWhyExpanded, setIsWhyExpanded] = React.useState(false);
+  const [feedback, setFeedback] = React.useState(null);
+
+  const handleFeedback = async (wasCorrect) => {
+    setFeedback(wasCorrect ? 'up' : 'down');
+    if (activeResult.scanId) {
+      supabase.from('scan_feedback').insert([{
+        scan_id: activeResult.scanId,
+        was_correct: wasCorrect
+      }]).then(() => {});
+    }
+  };
 
   const isHealthy = activeResult.severity === 'none';
   const isSevere = activeResult.severity === 'severe';
@@ -41,9 +60,18 @@ export default function DiagnosticDashboard({
 
   const confidenceScore = activeResult.confidence || 95.0;
 
+  const symptoms = activeResult.symptoms || activeResult.symptoms_observed || null;
+  const symptomsArray = Array.isArray(symptoms) ? symptoms : (symptoms?.[lang] || symptoms?.en || []);
+
   return (
     <div className="w-full my-8 space-y-6 animate-fadeIn">
       
+      {/* Disclaimer Banner */}
+      <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-amber-950/30 border border-amber-900/50 text-amber-500/90 text-xs sm:text-sm">
+        <AlertTriangle className="w-4 h-4 shrink-0" />
+        <p>{t.disclaimerText}</p>
+      </div>
+
       {/* Top Main Diagnosis Card */}
       <div className="relative rounded-3xl glass-panel-glow p-6 sm:p-8 border border-violet-500/30 overflow-hidden shadow-2xl">
         
@@ -122,6 +150,32 @@ export default function DiagnosticDashboard({
               </div>
             </div>
 
+            {/* Why this diagnosis panel */}
+            {symptomsArray && symptomsArray.length > 0 && (
+              <div className="mt-4 rounded-xl border border-slate-800 bg-slate-900/50 overflow-hidden">
+                <button
+                  onClick={() => setIsWhyExpanded(!isWhyExpanded)}
+                  className="w-full px-4 py-3 flex items-center justify-between text-left text-sm font-semibold text-slate-300 hover:bg-slate-800 transition-colors"
+                >
+                  <span className="flex items-center gap-2">
+                    <Info className="w-4 h-4 text-violet-400" />
+                    {t.whyDiagnosis}
+                  </span>
+                  {isWhyExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                </button>
+                {isWhyExpanded && (
+                  <div className="px-4 pb-4 pt-1 text-sm text-slate-400">
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">{t.symptomsMatched}</p>
+                    <ul className="list-disc list-inside space-y-1">
+                      {symptomsArray.map((sym, idx) => (
+                        <li key={idx}>{sym}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+
           </div>
 
           {/* Right column: Dynamic Confidence Gauge Meter */}
@@ -170,6 +224,31 @@ export default function DiagnosticDashboard({
               <p className="text-[11px] text-slate-400 mt-0.5">
                 Multi-spectral leaf geometry calibrated
               </p>
+            </div>
+
+            {/* Feedback Control */}
+            <div className="mt-6 pt-4 border-t border-slate-800/80 w-full text-center">
+              {feedback ? (
+                <p className="text-sm font-medium text-teal-400">{t.feedbackThanks}</p>
+              ) : (
+                <>
+                  <p className="text-xs text-slate-400 mb-3">{t.feedbackQuestion}</p>
+                  <div className="flex items-center justify-center gap-4">
+                    <button
+                      onClick={() => handleFeedback(true)}
+                      className="p-2 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-green-400 transition-colors"
+                    >
+                      <ThumbsUp className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleFeedback(false)}
+                      className="p-2 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-red-400 transition-colors"
+                    >
+                      <ThumbsDown className="w-4 h-4" />
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
 
           </div>

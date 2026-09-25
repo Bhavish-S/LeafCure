@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { Sprout, Plus } from 'lucide-react';
+import { Sprout, Plus, TrendingUp } from 'lucide-react';
 import { APP_TRANSLATIONS } from '../data/pathologyData';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 export default function MyPlants({ lang, session }) {
   const [plants, setPlants] = useState([]);
@@ -17,13 +18,29 @@ export default function MyPlants({ lang, session }) {
   }, [session]);
 
   const fetchPlants = async () => {
-    const { data, error } = await supabase
+    const { data: plantsData, error: plantsError } = await supabase
       .from('plants')
       .select('*')
       .order('created_at', { ascending: false });
     
-    if (!error && data) {
-      setPlants(data);
+    if (!plantsError && plantsData) {
+      // Fetch scans for these plants
+      const { data: scansData, error: scansError } = await supabase
+        .from('scans')
+        .select('*')
+        .not('plant_id', 'is', null)
+        .order('scanned_at', { ascending: true });
+        
+      if (!scansError && scansData) {
+        // Group scans by plant
+        const plantsWithScans = plantsData.map(plant => ({
+          ...plant,
+          scans: scansData.filter(s => s.plant_id === plant.id)
+        }));
+        setPlants(plantsWithScans);
+      } else {
+        setPlants(plantsData.map(p => ({ ...p, scans: [] })));
+      }
     }
   };
 
@@ -102,16 +119,55 @@ export default function MyPlants({ lang, session }) {
           <p className="text-slate-400">{t.myPlantsEmpty}</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {plants.map(plant => (
-            <div key={plant.id} className="p-4 bg-slate-900 border border-slate-800 rounded-xl flex flex-col gap-1">
-              <h4 className="text-lg font-bold text-white">{plant.name}</h4>
-              {plant.species && <span className="text-sm text-slate-400 italic">{plant.species}</span>}
-              <span className="text-xs text-slate-500 mt-2">
-                Added {new Date(plant.created_at).toLocaleDateString()}
-              </span>
-            </div>
-          ))}
+        <div className="grid grid-cols-1 gap-6">
+          {plants.map(plant => {
+            const chartData = (plant.scans || []).map(scan => ({
+              date: new Date(scan.scanned_at).toLocaleDateString(),
+              affectedArea: scan.diagnosis.affectedAreaPct || 0,
+              confidence: scan.diagnosis.confidence || 0
+            }));
+
+            return (
+              <div key={plant.id} className="p-5 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col gap-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="text-xl font-bold text-white">{plant.name}</h4>
+                    {plant.species && <span className="text-sm text-slate-400 italic">{plant.species}</span>}
+                    <span className="text-xs text-slate-500 block mt-1">
+                      Added {new Date(plant.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-800 rounded-full text-xs text-slate-300">
+                    <TrendingUp className="w-3.5 h-3.5 text-violet-400" />
+                    {plant.scans?.length || 0} Scans
+                  </div>
+                </div>
+
+                {chartData.length > 0 ? (
+                  <div className="h-48 w-full mt-2">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={chartData}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                        <XAxis dataKey="date" stroke="#94a3b8" fontSize={10} />
+                        <YAxis stroke="#94a3b8" fontSize={10} />
+                        <Tooltip 
+                          contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b' }}
+                          labelStyle={{ color: '#94a3b8' }}
+                        />
+                        <Legend wrapperStyle={{ fontSize: '12px' }} />
+                        <Line type="monotone" dataKey="affectedArea" name="Affected Area %" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} />
+                        <Line type="monotone" dataKey="confidence" name="Confidence %" stroke="#8b5cf6" strokeWidth={2} dot={{ r: 3 }} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                ) : (
+                  <div className="p-4 bg-slate-950/50 rounded-xl border border-dashed border-slate-800 text-center">
+                    <p className="text-xs text-slate-500">No scans attached to this plant yet. (Attach scans from the Scan History Vault)</p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

@@ -37,3 +37,14 @@ CREATE POLICY "Users can delete own scans" ON public.scans FOR DELETE USING (aut
 CREATE POLICY "Users can upload their own scans" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'scans' AND auth.uid()::text = (storage.foldername(name))[1]);
 CREATE POLICY "Anyone can view scan images" ON storage.objects FOR SELECT USING (bucket_id = 'scans');
 CREATE POLICY "Users can delete their own scans" ON storage.objects FOR DELETE USING (bucket_id = 'scans' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+-- 5. Feedback Table
+CREATE TABLE public.scan_feedback (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  scan_id uuid REFERENCES public.scans(id) NOT NULL,
+  was_correct boolean NOT NULL,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+ALTER TABLE public.scan_feedback ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can insert feedback" ON public.scan_feedback FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users can view own feedback" ON public.scan_feedback FOR SELECT USING (true);

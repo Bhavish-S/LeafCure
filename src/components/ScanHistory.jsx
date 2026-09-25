@@ -7,6 +7,7 @@ import {
   Cloud,
   HardDrive
 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import { APP_TRANSLATIONS } from '../data/pathologyData';
 
 export default function ScanHistory({ 
@@ -15,9 +16,18 @@ export default function ScanHistory({
   onDeleteScan, 
   onClearHistory, 
   lang,
-  isCloudSynced 
+  isCloudSynced,
+  onLinkPlant
 }) {
   const t = APP_TRANSLATIONS[lang] || APP_TRANSLATIONS.en;
+  
+  const [plants, setPlants] = React.useState([]);
+
+  React.useEffect(() => {
+    if (isCloudSynced) {
+      supabase.from('plants').select('id, name').then(({ data }) => setPlants(data || []));
+    }
+  }, [isCloudSynced]);
 
   const handleExportJson = () => {
     if (history.length === 0) return;
@@ -141,7 +151,7 @@ export default function ScanHistory({
                   </div>
 
                   {/* Actions */}
-                  <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
+                  <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between flex-wrap gap-2">
                     <button
                       onClick={() => onSelectScan(item)}
                       className="flex items-center gap-1 text-xs font-semibold text-violet-400 hover:text-violet-300"
@@ -150,9 +160,23 @@ export default function ScanHistory({
                       <span>{t.viewScan}</span>
                     </button>
 
+                    {isCloudSynced && plants.length > 0 && !item.plantId && (
+                      <select 
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            onLinkPlant(item.scanId, e.target.value);
+                          }
+                        }}
+                        className="bg-slate-800 text-slate-300 text-[10px] rounded px-1 py-1 border border-slate-700 outline-none w-[90px]"
+                      >
+                        <option value="">Link Plant</option>
+                        {plants.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                      </select>
+                    )}
+
                     <button
                       onClick={() => onDeleteScan(item.scanId || item.scannedAt)}
-                      className="text-slate-500 hover:text-red-400 p-1 rounded transition-colors"
+                      className="text-slate-500 hover:text-red-400 p-1 rounded transition-colors ml-auto"
                       title={t.deleteScan}
                     >
                       <Trash2 className="w-3.5 h-3.5" />

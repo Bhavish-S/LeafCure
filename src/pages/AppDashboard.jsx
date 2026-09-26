@@ -11,10 +11,12 @@ import DiagnosticReportPrint from '../components/DiagnosticReportPrint';
 import AuthModal from '../components/AuthModal';
 import MyPlants from '../components/MyPlants';
 import PrivacyModal from '../components/PrivacyModal';
+import CommunityMap from '../components/CommunityMap';
 import { supabase } from '../lib/supabase';
 import { runPathologyInference } from '../services/inferenceEngine';
+import { fetchWeatherContext } from '../utils/weatherUtils';
 import { APP_TRANSLATIONS, CROP_DISEASE_DATASET, CLINICAL_CHEMICAL_TREATMENTS } from '../data/pathologyData';
-import { Target, UploadCloud, History, Sparkles, Layers } from 'lucide-react';
+import { Target, UploadCloud, History, Sparkles, Layers, MapPin } from 'lucide-react';
 
 const LOCAL_STORAGE_KEY = 'plantcure_ai_diagnoses_v2';
 
@@ -188,6 +190,9 @@ export default function AppDashboard() {
        setTelemetryLogs([]);
        
        try {
+         const weatherCtx = await fetchWeatherContext();
+         const enrichedInfo = [additionalInfo, weatherCtx].filter(Boolean).join(' | ');
+
          const { localResult, aiPromise } = await runPathologyInference(
            urls[i],
            null,
@@ -195,7 +200,7 @@ export default function AppDashboard() {
              setScanProgress(progress);
              setTelemetryLogs(prev => [...prev, { step, text }]);
            },
-           additionalInfo
+           enrichedInfo
          );
          
          let finalResult = localResult;
@@ -239,6 +244,9 @@ export default function AppDashboard() {
     setTelemetryLogs([]);
 
     try {
+      const weatherCtx = await fetchWeatherContext();
+      const enrichedInfo = [additionalInfo, weatherCtx].filter(Boolean).join(' | ');
+      
       const { localResult, aiPromise } = await runPathologyInference(
         imageSrc,
         predefinedId,
@@ -246,7 +254,7 @@ export default function AppDashboard() {
           setScanProgress(progress);
           setTelemetryLogs(prev => [...prev, { step, text }]);
         },
-        additionalInfo
+        enrichedInfo
       );
 
       setActiveDiagnosis(localResult);
@@ -410,6 +418,20 @@ export default function AppDashboard() {
               <History className="w-3.5 h-3.5 text-violet-300" />
               <span>Scan Vault ({history.length})</span>
             </button>
+
+            <button
+              onClick={() => {
+                setActiveTab('map');
+              }}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                activeTab === 'map'
+                  ? 'bg-violet-600 text-white shadow-md shadow-violet-600/30 ring-1 ring-violet-400/40'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+              }`}
+            >
+              <MapPin className="w-3.5 h-3.5 text-violet-300" />
+              <span>Disease Map</span>
+            </button>
           </div>
 
           {activeDiagnosis && (
@@ -513,6 +535,11 @@ export default function AppDashboard() {
           <div id="my-plants">
             <MyPlants lang={lang} session={session} />
           </div>
+        )}
+
+        {/* Community Outbreak Map */}
+        {activeTab === 'map' && (
+          <CommunityMap />
         )}
 
         {/* Module 4: Saved Diagnostic History Vault */}

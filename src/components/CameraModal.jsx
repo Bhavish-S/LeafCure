@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Camera, X, RefreshCw, AlertCircle } from 'lucide-react';
+import { Camera, X, RefreshCw, AlertCircle, Maximize } from 'lucide-react';
 import { APP_TRANSLATIONS } from '../data/pathologyData';
 
 export default function CameraModal({ isOpen, onClose, onCapture, lang }) {
@@ -10,6 +10,7 @@ export default function CameraModal({ isOpen, onClose, onCapture, lang }) {
   const [isInitializing, setIsInitializing] = useState(false);
   const [framingHint, setFramingHint] = useState('');
   const [hintColor, setHintColor] = useState('text-slate-300');
+  const [isARMode, setIsARMode] = useState(false);
   const animationRef = useRef(null);
 
   useEffect(() => {
@@ -205,6 +206,21 @@ export default function CameraModal({ isOpen, onClose, onCapture, lang }) {
                 </div>
               )}
 
+              {/* AR Measuring Overlay */}
+              {isARMode && (
+                <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center opacity-70">
+                  <div className="w-full h-full border border-emerald-500/30" style={{
+                    backgroundImage: 'linear-gradient(to right, rgba(16, 185, 129, 0.2) 1px, transparent 1px), linear-gradient(to bottom, rgba(16, 185, 129, 0.2) 1px, transparent 1px)',
+                    backgroundSize: '20px 20px'
+                  }}></div>
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 border-2 border-emerald-500 flex items-center justify-center">
+                    <div className="absolute -top-6 text-[10px] font-mono text-emerald-400 bg-black/50 px-1 rounded">w: 8.5 cm</div>
+                    <div className="absolute -left-12 top-1/2 -translate-y-1/2 -rotate-90 text-[10px] font-mono text-emerald-400 bg-black/50 px-1 rounded">h: 12.0 cm</div>
+                    <div className="w-2 h-2 rounded-full bg-emerald-500/50"></div>
+                  </div>
+                </div>
+              )}
+
               {isInitializing && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/60 text-slate-300 text-sm">
                   <RefreshCw className="w-5 h-5 animate-spin mr-2 text-violet-400" />
@@ -221,6 +237,17 @@ export default function CameraModal({ isOpen, onClose, onCapture, lang }) {
             {t.cameraNotice}
           </p>
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <button
+              onClick={() => setIsARMode(!isARMode)}
+              className={`p-2 rounded-lg text-xs font-medium border transition-colors ${
+                isARMode 
+                  ? 'bg-emerald-950/50 text-emerald-400 border-emerald-500/50' 
+                  : 'bg-slate-800 text-slate-300 border-slate-700 hover:text-white'
+              }`}
+              title="Toggle AR Grid"
+            >
+              <Maximize className="w-4 h-4" />
+            </button>
             <button
               onClick={onClose}
               className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white text-xs font-medium border border-slate-700"

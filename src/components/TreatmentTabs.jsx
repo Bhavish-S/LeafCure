@@ -10,7 +10,8 @@ import {
   AlertCircle,
   CalendarCheck2,
   CheckCircle2,
-  Droplets
+  Droplets,
+  ShoppingCart
 } from 'lucide-react';
 import { APP_TRANSLATIONS, CLINICAL_CHEMICAL_TREATMENTS, HEALTHY_MAINTENANCE_TREATMENTS, CROP_DISEASE_DATASET } from '../data/pathologyData';
 
@@ -233,6 +234,21 @@ export default function TreatmentTabs({ result, lang = 'en', onPrintReport }) {
                     </span>
                   )}
                 </div>
+
+                {/* Marketplace Integration */}
+                <a 
+                  href={`https://www.amazon.in/s?k=${encodeURIComponent((chem.tradeName || chem.salt) + ' agricultural fungicide fertilizer')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`mt-4 w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg font-bold text-[11px] uppercase tracking-wider transition-all duration-200 border shadow-sm ${
+                    isHealthyCrop 
+                      ? 'bg-violet-950/40 text-violet-300 border-violet-800/50 hover:bg-violet-900/60 hover:border-violet-600/50 hover:shadow-violet-900/50' 
+                      : 'bg-amber-950/40 text-amber-300 border-amber-800/50 hover:bg-amber-900/60 hover:border-amber-600/50 hover:shadow-amber-900/50'
+                  }`}
+                >
+                  <ShoppingCart className="w-3.5 h-3.5" />
+                  {lang === 'hi' ? 'अमेज़न पर खोजें' : (lang === 'kn' ? 'ಅಮೆಜಾನ್ ನಲ್ಲಿ ಹುಡುಕಿ' : 'Find on Amazon')}
+                </a>
               </div>
             ))}
           </div>

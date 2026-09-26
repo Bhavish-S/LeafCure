@@ -3,24 +3,6 @@
 > oxlint
 
 
-  ! eslint(no-unused-vars): Parameter 'customOptions' is declared but never used. Unused parameters should start with a '_'.
-    ,-[src/utils/lesionDetector.js:18:45]
- 17 | 
- 18 | export function detectLesionsFromImage(img, customOptions = {}) {
-    :                                             ^^^^^^|^^^^^^
-    :                                                   `-- 'customOptions' is declared here
- 19 |   const nw = img.naturalWidth || img.width || 500;
-    `----
-  help: Consider removing this parameter.
-
-  x Invalid Unicode escape sequence
-    ,-[api/chat.js:23:24]
- 22 |   try {
- 23 |     const geminiUrl = \`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=\${process.env.GEMINI_API_KEY}\`;
-    :                        ^
- 24 | 
-    `----
-
   ! eslint(no-unused-vars): Identifier 'ShieldCheck' is imported but never used.
    ,-[src/components/ScanOverlay.jsx:2:25]
  1 | import React from 'react';
@@ -40,6 +22,24 @@
  3 | import { supabase } from '../lib/supabase';
    `----
   help: Consider removing this import.
+
+  x Invalid Unicode escape sequence
+    ,-[api/chat.js:23:24]
+ 22 |   try {
+ 23 |     const geminiUrl = \`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=\${process.env.GEMINI_API_KEY}\`;
+    :                        ^
+ 24 | 
+    `----
+
+  ! eslint(no-unused-vars): Parameter 'customOptions' is declared but never used. Unused parameters should start with a '_'.
+    ,-[src/utils/lesionDetector.js:18:45]
+ 17 | 
+ 18 | export function detectLesionsFromImage(img, customOptions = {}) {
+    :                                             ^^^^^^|^^^^^^
+    :                                                   `-- 'customOptions' is declared here
+ 19 |   const nw = img.naturalWidth || img.width || 500;
+    `----
+  help: Consider removing this parameter.
 
   ! eslint(no-unused-vars): Identifier 'CheckCircle2' is imported but never used.
    ,-[src/components/LeafUploadZone.jsx:2:61]
@@ -116,7 +116,7 @@
   help: Either include it or remove the dependency array.
 
   ! react(set-state-in-effect): Calling setState synchronously within an effect can trigger cascading renders
-    ,-[src/App.jsx:95:13]
+    ,-[src/pages/AppDashboard.jsx:95:13]
  67 |   // Load persistent scan history from localStorage or Supabase
  68 |   useEffect(() => {
     :   ^^^^|^^^^
@@ -300,4 +300,4 @@
   help: Consider removing this parameter.
 
 Found 24 warnings and 1 error.
-Finished in 29ms on 27 files with 104 rules using 10 threads.
+Finished in 13ms on 29 files with 104 rules using 10 threads.

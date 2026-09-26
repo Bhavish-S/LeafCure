@@ -21,14 +21,14 @@ export default defineConfig({
         display: 'standalone',
         icons: [
           {
-            src: 'https://cdn.iconscout.com/icon/free/png-256/free-leaf-icon-download-in-svg-png-gif-file-formats--nature-plant-ecology-plants-pack-nature-icons-3112247.png?f=webp',
-            sizes: '256x256',
-            type: 'image/png'
+            src: '/favicon.svg',
+            sizes: 'any',
+            type: 'image/svg+xml'
           },
           {
-            src: 'https://cdn.iconscout.com/icon/free/png-512/free-leaf-icon-download-in-svg-png-gif-file-formats--nature-plant-ecology-plants-pack-nature-icons-3112247.png?f=webp',
+            src: '/favicon.svg',
             sizes: '512x512',
-            type: 'image/png',
+            type: 'image/svg+xml',
             purpose: 'any maskable'
           }
         ]

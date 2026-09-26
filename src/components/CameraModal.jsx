@@ -94,7 +94,7 @@ export default function CameraModal({ isOpen, onClose, onCapture, lang }) {
     };
   }, [isOpen, isInitializing, cameraError]);
 
-  const startCamera = async () => {
+  async function startCamera() {
     setCameraError(null);
     setIsInitializing(true);
     try {
@@ -122,14 +122,14 @@ export default function CameraModal({ isOpen, onClose, onCapture, lang }) {
       setCameraError(err.message || t.cameraFallback);
       setIsInitializing(false);
     }
-  };
+  }
 
-  const stopCamera = () => {
+  function stopCamera() {
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
     }
-  };
+  }
 
   const captureFrame = () => {
     if (!videoRef.current) return;

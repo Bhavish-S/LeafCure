@@ -12,37 +12,37 @@ export default function MyPlants({ lang, session }) {
   const t = APP_TRANSLATIONS[lang] || APP_TRANSLATIONS.en;
 
   useEffect(() => {
+    async function fetchPlants() {
+      const { data: plantsData, error: plantsError } = await supabase
+        .from('plants')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (!plantsError && plantsData) {
+        // Fetch scans for these plants
+        const { data: scansData, error: scansError } = await supabase
+          .from('scans')
+          .select('*')
+          .not('plant_id', 'is', null)
+          .order('scanned_at', { ascending: true });
+          
+        if (!scansError && scansData) {
+          // Group scans by plant
+          const plantsWithScans = plantsData.map(plant => ({
+            ...plant,
+            scans: scansData.filter(s => s.plant_id === plant.id)
+          }));
+          setPlants(plantsWithScans);
+        } else {
+          setPlants(plantsData.map(p => ({ ...p, scans: [] })));
+        }
+      }
+    }
+
     if (session) {
       fetchPlants();
     }
   }, [session]);
-
-  const fetchPlants = async () => {
-    const { data: plantsData, error: plantsError } = await supabase
-      .from('plants')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
-    if (!plantsError && plantsData) {
-      // Fetch scans for these plants
-      const { data: scansData, error: scansError } = await supabase
-        .from('scans')
-        .select('*')
-        .not('plant_id', 'is', null)
-        .order('scanned_at', { ascending: true });
-        
-      if (!scansError && scansData) {
-        // Group scans by plant
-        const plantsWithScans = plantsData.map(plant => ({
-          ...plant,
-          scans: scansData.filter(s => s.plant_id === plant.id)
-        }));
-        setPlants(plantsWithScans);
-      } else {
-        setPlants(plantsData.map(p => ({ ...p, scans: [] })));
-      }
-    }
-  };
 
   const handleCreate = async (e) => {
     e.preventDefault();

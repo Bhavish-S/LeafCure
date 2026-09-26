@@ -1,0 +1,303 @@
+
+> floraguard-ai@0.0.0 lint
+> oxlint
+
+
+  ! eslint(no-unused-vars): Parameter 'customOptions' is declared but never used. Unused parameters should start with a '_'.
+    ,-[src/utils/lesionDetector.js:18:45]
+ 17 | 
+ 18 | export function detectLesionsFromImage(img, customOptions = {}) {
+    :                                             ^^^^^^|^^^^^^
+    :                                                   `-- 'customOptions' is declared here
+ 19 |   const nw = img.naturalWidth || img.width || 500;
+    `----
+  help: Consider removing this parameter.
+
+  x Invalid Unicode escape sequence
+    ,-[api/chat.js:23:24]
+ 22 |   try {
+ 23 |     const geminiUrl = \`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=\${process.env.GEMINI_API_KEY}\`;
+    :                        ^
+ 24 | 
+    `----
+
+  ! eslint(no-unused-vars): Identifier 'ShieldCheck' is imported but never used.
+   ,-[src/components/ScanOverlay.jsx:2:25]
+ 1 | import React from 'react';
+ 2 | import { Terminal, Cpu, ShieldCheck } from 'lucide-react';
+   :                         ^^^^^|^^^^^
+   :                              `-- 'ShieldCheck' is imported here
+ 3 | import { APP_TRANSLATIONS } from '../data/pathologyData';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Globe' is imported but never used.
+   ,-[src/components/Navbar.jsx:2:28]
+ 1 | import React, { useEffect, useState } from 'react';
+ 2 | import { Sprout, Activity, Globe, History, RefreshCw, User, LogOut, Sun, Moon } from 'lucide-react';
+   :                            ^^|^^
+   :                              `-- 'Globe' is imported here
+ 3 | import { supabase } from '../lib/supabase';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'CheckCircle2' is imported but never used.
+   ,-[src/components/LeafUploadZone.jsx:2:61]
+ 1 | import React, { useRef, useState, useEffect } from 'react';
+ 2 | import { UploadCloud, Camera, Image as ImageIcon, Sparkles, CheckCircle2, ChevronRight, Zap, Mic, MicOff, MapPin } from 'lucide-react';
+   :                                                             ^^^^^^|^^^^^
+   :                                                                   `-- 'CheckCircle2' is imported here
+ 3 | import { CROP_DISEASE_DATASET, APP_TRANSLATIONS } from '../data/pathologyData';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Variable 'isMildOrHealthy' is declared but never used. Unused variables should start with a '_'.
+     ,-[src/components/LeafUploadZone.jsx:256:19]
+ 255 |           {CROP_DISEASE_DATASET.slice(0, 3).map((sample) => {
+ 256 |             const isMildOrHealthy = sample.severity === 'none' || sample.severity === 'mild';
+     :                   ^^^^^^^|^^^^^^^
+     :                          `-- 'isMildOrHealthy' is declared here
+ 257 |             const isSevere = sample.severity === 'severe';
+     `----
+  help: Consider removing this declaration.
+
+  ! react(set-state-in-effect): Calling setState synchronously within an effect can trigger cascading renders
+    ,-[src/components/LeafUploadZone.jsx:22:7]
+ 18 | 
+ 19 |   useEffect(() => {
+    :   ^^^^|^^^^
+    :       `-- This is the containing effect
+ 20 |     const savedRegion = localStorage.getItem('floraguard_region');
+ 21 |     if (savedRegion) {
+ 22 |       setRegionSeason(savedRegion);
+    :       ^^^^^^^|^^^^^^^
+    :              `-- Avoid calling setState() directly within an effect
+ 23 |     }
+    `----
+  help: Effects should synchronize React with external systems. Calling setState synchronously inside an effect starts another render and is usually unnecessary. Derive the value during render, initialize state directly, or update it from the event that caused the change. Use an effect only when synchronizing with an external system.
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/set-state-in-effect
+
+  ! eslint(no-unused-vars): Identifier 'Clock' is imported but never used.
+   ,-[src/components/TreatmentTabs.jsx:7:3]
+ 6 |   Printer, 
+ 7 |   Clock, 
+   :   ^^|^^
+   :     `-- 'Clock' is imported here
+ 8 |   Scale, 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Info' is imported but never used.
+    ,-[src/components/TreatmentTabs.jsx:9:3]
+  8 |   Scale, 
+  9 |   Info, 
+    :   ^^|^
+    :     `-- 'Info' is imported here
+ 10 |   AlertCircle,
+    `----
+  help: Consider removing this import.
+
+  ! react-hooks(exhaustive-deps): React Hook useEffect has a missing dependency: 'startCamera'
+    ,-[src/components/CameraModal.jsx:24:6]
+ 16 |     if (isOpen) {
+ 17 |       startCamera();
+    :       ^^^^^|^^^^^
+    :            `-- useEffect uses `startCamera` here
+ 18 |     } else {
+ 19 |       stopCamera();
+ 20 |     }
+ 21 |     return () => {
+ 22 |       stopCamera();
+ 23 |     };
+ 24 |   }, [isOpen]);
+    :      ^^^^^^^^
+ 25 | 
+    `----
+  help: Either include it or remove the dependency array.
+
+  ! react(set-state-in-effect): Calling setState synchronously within an effect can trigger cascading renders
+    ,-[src/App.jsx:95:13]
+ 67 |   // Load persistent scan history from localStorage or Supabase
+ 68 |   useEffect(() => {
+    :   ^^^^|^^^^
+    :       `-- This is the containing effect
+ 69 |     if (session) {
+ 70 |       // Load from Supabase
+ 71 |       const fetchScans = async () => {
+ 72 |         const { data, error } = await supabase
+ 73 |           .from('scans')
+ 74 |           .select('*')
+ 75 |           .order('scanned_at', { ascending: false });
+ 76 |         
+ 77 |         if (!error && data) {
+ 78 |           const formattedHistory = data.map(scan => ({
+ 79 |             ...scan.diagnosis,
+ 80 |             imageUrl: scan.image_url,
+ 81 |             scanId: scan.id,
+ 82 |             scannedAt: scan.scanned_at,
+ 83 |             plantId: scan.plant_id
+ 84 |           }));
+ 85 |           setHistory(formattedHistory);
+ 86 |         }
+ 87 |       };
+ 88 |       fetchScans();
+ 89 |     } else {
+ 90 |       try {
+ 91 |         const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+ 92 |         if (saved) {
+ 93 |           const parsed = JSON.parse(saved);
+ 94 |           if (Array.isArray(parsed)) {
+ 95 |             setHistory(parsed);
+    :             ^^^^^|^^^^
+    :                  `-- Avoid calling setState() directly within an effect
+ 96 |           }
+    `----
+  help: Effects should synchronize React with external systems. Calling setState synchronously inside an effect starts another render and is usually unnecessary. Derive the value during render, initialize state directly, or update it from the event that caused the change. Use an effect only when synchronizing with an external system.
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/set-state-in-effect
+
+  ! eslint(no-unused-vars): Identifier 'AlertOctagon' is imported but never used.
+   ,-[src/components/DiagnosticDashboard.jsx:5:3]
+ 4 |   AlertTriangle, 
+ 5 |   AlertOctagon, 
+   :   ^^^^^^|^^^^^
+   :         `-- 'AlertOctagon' is imported here
+ 6 |   Dna, 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Percent' is imported but never used.
+   ,-[src/components/DiagnosticDashboard.jsx:8:3]
+ 7 |   Activity, 
+ 8 |   Percent, 
+   :   ^^^|^^^
+   :      `-- 'Percent' is imported here
+ 9 |   HeartPulse, 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'FileText' is imported but never used.
+    ,-[src/components/DiagnosticDashboard.jsx:11:3]
+ 10 |   Share2, 
+ 11 |   FileText,
+    :   ^^^^|^^^
+    :       `-- 'FileText' is imported here
+ 12 |   Calendar,
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'Calendar' is imported but never used.
+    ,-[src/components/DiagnosticDashboard.jsx:12:3]
+ 11 |   FileText,
+ 12 |   Calendar,
+    :   ^^^^|^^^
+    :       `-- 'Calendar' is imported here
+ 13 |   Sparkles,
+    `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Parameter 'onPrintReport' is declared but never used. Unused parameters should start with a '_'.
+    ,-[src/components/DiagnosticDashboard.jsx:31:3]
+ 30 |   lang = 'en', 
+ 31 |   onPrintReport 
+    :   ^^^^^^|^^^^^^
+    :         `-- 'onPrintReport' is declared here
+ 32 | }) {
+    `----
+  help: Consider removing this parameter.
+
+  ! eslint(no-unused-vars): Catch parameter 'err' is caught but never used.
+    ,-[src/components/DiagnosticDashboard.jsx:83:14]
+ 82 |       }
+ 83 |     } catch (err) {
+    :              ^|^
+    :               `-- 'err' is declared here
+ 84 |       setChatHistory(prev => [...prev, { role: 'model', content: 'Failed to connect to the assistant.' }]);
+    `----
+  help: Consider handling this error.
+
+  ! eslint(no-unused-vars): Catch parameter 'e2' is caught but never used.
+     ,-[src/components/DiagnosticDashboard.jsx:133:16]
+ 132 |         link.click();
+ 133 |       } catch (e2) {}
+     :                ^|
+     :                 `-- 'e2' is declared here
+ 134 |     } finally {
+     `----
+  help: Consider handling this error.
+
+  ! eslint(no-unused-vars): Variable 'isHealthy' is declared but never used. Unused variables should start with a '_'.
+     ,-[src/components/DiagnosticDashboard.jsx:139:9]
+ 138 | 
+ 139 |   const isHealthy = activeResult.severity === 'none';
+     :         ^^^^|^^^^
+     :             `-- 'isHealthy' is declared here
+ 140 |   const isSevere = activeResult.severity === 'severe';
+     `----
+  help: Consider removing this declaration.
+
+  ! react(set-state-in-effect): Calling setState synchronously within an effect can trigger cascading renders
+    ,-[src/components/DiagnosticDashboard.jsx:54:5]
+ 52 |   // Reset chat when viewing a different scan
+ 53 |   React.useEffect(() => {
+    :   ^^^^^^^|^^^^^^^
+    :          `-- This is the containing effect
+ 54 |     setChatHistory([]);
+    :     ^^^^^^^|^^^^^^
+    :            `-- Avoid calling setState() directly within an effect
+ 55 |     setIsChatOpen(false);
+    `----
+  help: Effects should synchronize React with external systems. Calling setState synchronously inside an effect starts another render and is usually unnecessary. Derive the value during render, initialize state directly, or update it from the event that caused the change. Use an effect only when synchronizing with an external system.
+  note: React Compiler skipped optimizing this component or hook. Additional guidance: https://react.dev/reference/eslint-plugin-react-hooks/lints/set-state-in-effect
+
+  ! eslint(no-unused-vars): Identifier 'Sparkles' is imported but never used.
+   ,-[src/components/LeafCanvasInspector.jsx:2:39]
+ 1 | import React, { useRef, useEffect, useState } from 'react';
+ 2 | import { Layers, Eye, EyeOff, Target, Sparkles, ZoomIn, RefreshCw, CheckCircle2 } from 'lucide-react';
+   :                                       ^^^^|^^^
+   :                                           `-- 'Sparkles' is imported here
+ 3 | import { APP_TRANSLATIONS } from '../data/pathologyData';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'ZoomIn' is imported but never used.
+   ,-[src/components/LeafCanvasInspector.jsx:2:49]
+ 1 | import React, { useRef, useEffect, useState } from 'react';
+ 2 | import { Layers, Eye, EyeOff, Target, Sparkles, ZoomIn, RefreshCw, CheckCircle2 } from 'lucide-react';
+   :                                                 ^^^|^^
+   :                                                    `-- 'ZoomIn' is imported here
+ 3 | import { APP_TRANSLATIONS } from '../data/pathologyData';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'RefreshCw' is imported but never used.
+   ,-[src/components/LeafCanvasInspector.jsx:2:57]
+ 1 | import React, { useRef, useEffect, useState } from 'react';
+ 2 | import { Layers, Eye, EyeOff, Target, Sparkles, ZoomIn, RefreshCw, CheckCircle2 } from 'lucide-react';
+   :                                                         ^^^^|^^^^
+   :                                                             `-- 'RefreshCw' is imported here
+ 3 | import { APP_TRANSLATIONS } from '../data/pathologyData';
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Identifier 'generateFallbackLesions' is imported but never used.
+   ,-[src/components/LeafCanvasInspector.jsx:4:34]
+ 3 | import { APP_TRANSLATIONS } from '../data/pathologyData';
+ 4 | import { detectLesionsFromImage, generateFallbackLesions } from '../utils/lesionDetector.js';
+   :                                  ^^^^^^^^^^^|^^^^^^^^^^^
+   :                                             `-- 'generateFallbackLesions' is imported here
+ 5 | 
+   `----
+  help: Consider removing this import.
+
+  ! eslint(no-unused-vars): Parameter 'diseaseName' is declared but never used. Unused parameters should start with a '_'.
+    ,-[src/components/LeafCanvasInspector.jsx:9:3]
+  8 |   lesions = [], 
+  9 |   diseaseName,
+    :   ^^^^^|^^^^^
+    :        `-- 'diseaseName' is declared here
+ 10 |   severity,
+    `----
+  help: Consider removing this parameter.
+
+Found 24 warnings and 1 error.
+Finished in 29ms on 27 files with 104 rules using 10 threads.
